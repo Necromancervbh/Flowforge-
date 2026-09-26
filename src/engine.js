@@ -75,6 +75,13 @@ export class Engine extends EventEmitter {
       const stop = card.start({
         params: this.fillDefaults(card, combo.trigger.params),
         fire: (extra) => this.fire(combo.id, extra, 'trigger'),
+        // Lets a running trigger show (or clear) a problem on its combo card.
+        problem: (message) => {
+          if ((this.armErrors.get(combo.id) ?? null) === (message ?? null)) return;
+          if (message) this.armErrors.set(combo.id, message);
+          else this.armErrors.delete(combo.id);
+          this.emit('event', { type: 'changed' });
+        },
         boot,
         helpers: this.helpers,
       });

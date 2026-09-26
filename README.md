@@ -47,6 +47,7 @@ Options: `PORT=4778 npm start` uses another port, `FLOWFORGE_DATA=/some/dir` sav
 | | 📥 File Appears | rare | Lv 1 | A new file lands in a folder (optionally only certain types) |
 | | ⏱️ Ticking Clock | common | Lv 1 | Every N minutes |
 | | 🌅 Daily Ritual | rare | Lv 2 | Once a day at a set time |
+| | 📋 Copycat | rare | Lv 2 | You copy new text (e.g. collect every link you copy) |
 | | 🔌 Power On | common | Lv 3 | When FlowForge starts |
 | | 🔭 Web Watcher | epic | Lv 4 | A web page's text changes |
 | **IF** | 🔎 Keyword Filter | common | Lv 1 | Text contains / doesn't contain a word |
@@ -66,9 +67,17 @@ Options: `PORT=4778 npm start` uses another port, `FLOWFORGE_DATA=/some/dir` sav
 ### Magic words
 
 Any text box can use placeholders that are filled in when the combo runs:
-`{{file.name}}`, `{{file.base}}`, `{{file.ext}}`, `{{file.path}}`, `{{file.dir}}`, `{{date}}`, `{{time}}`, `{{datetime}}`, `{{year}}`, `{{month}}`, `{{day}}`, `{{weekday}}`, `{{combo.name}}`, `{{page.url}}`, `{{page.title}}`, `{{page.snippet}}`.
+`{{file.name}}`, `{{file.base}}`, `{{file.ext}}`, `{{file.path}}`, `{{file.dir}}`, `{{date}}`, `{{time}}`, `{{datetime}}`, `{{year}}`, `{{month}}`, `{{day}}`, `{{weekday}}`, `{{combo.name}}`, `{{clip.text}}`, `{{clip.snippet}}`, `{{page.url}}`, `{{page.title}}`, `{{page.snippet}}`.
 
 Example: move to `~/Documents/Sorted/{{year}}/{{file.ext}}`.
+
+Another example, a **Link Collector** that saves every link you copy:
+
+```
+📋 Copycat  →  🔎 Keyword "http" in {{clip.text}}  →  📜 Scribe "{{datetime}} {{clip.text}}" to ~/Documents/links.txt
+```
+
+On Linux, Copycat needs `wl-clipboard` (Wayland) or `xclip` / `xsel` (X11). macOS and Windows work out of the box.
 
 The **Arcane Command** card is the exception: it gets these as environment variables (`$FF_FILE_PATH`, `$FF_FILE_NAME`, `$FF_FILE_EXT`, `$FF_COMBO`, `$FF_PAGE_URL`; use `%FF_FILE_PATH%` on Windows) so a strangely named file can't inject shell commands.
 
@@ -84,6 +93,10 @@ The **Arcane Command** card is the exception: it gets these as environment varia
 - The engine only listens on `127.0.0.1`. It rejects requests with a foreign `Host` header (DNS rebinding) and any write without the `X-FlowForge` header, so websites you visit can't create or trigger combos.
 - Moves, copies and renames never overwrite: `report.pdf` becomes `report (1).pdf`.
 - Files FlowForge writes into a watched folder don't re-trigger that folder's combos, so there are no infinite loops.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
 
 ## Develop
 

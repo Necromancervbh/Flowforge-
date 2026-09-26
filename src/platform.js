@@ -70,6 +70,36 @@ export async function openTarget(target) {
   else await run('xdg-open', [target]);
 }
 
+// Clipboard readers per OS, tried in order (Linux has several).
+const CLIPBOARD_READERS = {
+  darwin: [['pbpaste', []]],
+  win32: [['powershell.exe', ['-NoProfile', '-Command', 'Get-Clipboard -Raw']]],
+  linux: [
+    ['wl-paste', ['--no-newline']],
+    ['xclip', ['-selection', 'clipboard', '-o']],
+    ['xsel', ['--clipboard', '--output']],
+  ],
+};
+let clipboardReader = null;
+
+// Returns the clipboard text. Throws if no clipboard tool is installed.
+export async function readClipboard() {
+  if (clipboardReader) return (await run(...clipboardReader, { timeout: 5000 })).stdout;
+  let lastError = new Error('No clipboard support on this system');
+  for (const reader of CLIPBOARD_READERS[platform] || CLIPBOARD_READERS.linux) {
+    try {
+      const { stdout } = await run(...reader, { timeout: 5000 });
+      clipboardReader = reader;
+      return stdout;
+    } catch (err) {
+      lastError = err.code === 'ENOENT'
+        ? new Error('Install wl-clipboard or xclip so FlowForge can read the clipboard')
+        : err;
+    }
+  }
+  throw lastError;
+}
+
 // The command is the user's own shell snippet; run details are exposed as
 // FF_* environment variables so file names can't inject shell syntax.
 export function runCommand(command, env) {

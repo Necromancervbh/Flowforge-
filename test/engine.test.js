@@ -173,6 +173,44 @@ test('the File Appears trigger fires for new files and ignores our own writes', 
   assert.ok(fs.existsSync(path.join(inbox, 'note (1).txt')));
 });
 
+test('Copycat fires for newly copied text, not what was already on the clipboard', async () => {
+  const clips = ['already copied', 'already copied', 'https://example.com/cool', '   ', 'https://example.com/cool'];
+  fakePlatform.readClipboard = async () => clips.shift() ?? 'https://example.com/cool';
+  engine.store.profile.xp = 100;
+  const logFile = path.join(dir, 'links.txt');
+  const combo = engine.saveCombo({
+    name: 'Link Collector',
+    trigger: { card: 'clipboard' },
+    conditions: [{ card: 'text-contains', params: { text: '{{clip.text}}', word: 'http', mode: 'contains' } }],
+    actions: [{ card: 'write-log', params: { file: logFile, line: '{{clip.snippet}}' } }],
+  });
+  const { CLIPBOARD_POLL_MS } = await import('../src/cards.js');
+  await new Promise((r) => setTimeout(r, CLIPBOARD_POLL_MS * 5.5));
+  delete fakePlatform.readClipboard;
+
+  assert.equal(combo.runs, 1);
+  assert.equal(fs.readFileSync(logFile, 'utf8'), 'https://example.com/cool\n');
+});
+
+test('Copycat shows a clipboard problem on its combo, then clears it once fixed', async () => {
+  let broken = true;
+  fakePlatform.readClipboard = async () => {
+    if (broken) throw new Error('Install xclip');
+    return 'hello';
+  };
+  engine.store.profile.xp = 100;
+  const combo = engine.saveCombo({ name: 'Clip', trigger: { card: 'clipboard' }, actions: [{ card: 'notify' }] });
+  const armError = () => engine.snapshot().combos.find((c) => c.id === combo.id).armError;
+  await new Promise((r) => setTimeout(r, 50));
+  assert.equal(armError(), 'Install xclip');
+
+  broken = false;
+  const { CLIPBOARD_POLL_MS } = await import('../src/cards.js');
+  await new Promise((r) => setTimeout(r, CLIPBOARD_POLL_MS + 300));
+  delete fakePlatform.readClipboard;
+  assert.equal(armError(), null);
+});
+
 test('a missing watch folder is reported instead of crashing', () => {
   const combo = engine.saveCombo({
     name: 'Broken',

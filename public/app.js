@@ -12,7 +12,7 @@ const TYPE_LABEL = { trigger: 'WHEN', condition: 'IF', action: 'THEN' };
 const VARS = [
   'file.name', 'file.base', 'file.ext', 'file.path', 'file.dir',
   'date', 'time', 'datetime', 'year', 'month', 'day', 'weekday',
-  'combo.name', 'page.url', 'page.title', 'page.snippet',
+  'combo.name', 'clip.text', 'clip.snippet', 'page.url', 'page.title', 'page.snippet',
 ];
 
 const RECIPES = [
