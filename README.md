@@ -39,6 +39,8 @@ Your browser opens at <http://localhost:4777>. Keep the terminal open: that's th
 
 Options: `PORT=4778 npm start` uses another port, `FLOWFORGE_DATA=/some/dir` saves elsewhere, and `--no-open` skips opening the browser.
 
+New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screenshot Stash, Stretch Break, Link Collector) to load a ready-made combo into the forge. Recipes that use cards you haven't unlocked yet show 🔒 and the level they need.
+
 ## Cards
 
 | | Card | Rarity | Unlocks | What it does |
