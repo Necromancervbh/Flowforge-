@@ -9,6 +9,18 @@ Snap cards together into combos: a **WHEN** card (trigger), optional **IF** card
    (in Downloads)       (in the file name)     (to Invoices/2026)  (log it)
 ```
 
+![FlowForge: card collection, forge, live combos and battle log](docs/screenshots/overview.png)
+
+## Screenshots
+
+| The Forge: snap cards into a combo | Collection: cards unlock as you level up |
+|---|---|
+| ![Editing the Invoice Catcher combo in the forge](docs/screenshots/forge.png) | ![Card collection with rarities and a locked epic card](docs/screenshots/collection.png) |
+
+| Achievements | On a phone |
+|---|---|
+| ![Achievements dialog](docs/screenshots/achievements.png) | ![FlowForge on a narrow screen](docs/screenshots/mobile.png) |
+
 ## Run it
 
 Needs [Node.js](https://nodejs.org) 20 or newer. There are no other dependencies.
