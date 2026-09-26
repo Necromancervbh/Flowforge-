@@ -46,7 +46,18 @@ const RECIPES = [
     conditions: [],
     actions: [{ card: 'notify', params: { title: 'Stretch break 🧘', message: 'Stand up, look away from the screen, drink water.' } }],
   },
+  {
+    emoji: '🔗', name: 'Link Collector', blurb: 'Every link you copy is saved to links.txt.',
+    trigger: { card: 'clipboard', params: {} },
+    conditions: [{ card: 'text-contains', params: { text: '{{clip.text}}', word: 'http', mode: 'contains' } }],
+    actions: [{ card: 'write-log', params: { file: '~/Documents/links.txt', line: '{{datetime}}  {{clip.snippet}}' } }],
+  },
 ];
+
+// The player level a recipe needs: the highest unlock level among its cards.
+function recipeLevel(recipe) {
+  return Math.max(...[recipe.trigger, ...recipe.conditions, ...recipe.actions].map((s) => cardById(s.card)?.unlock ?? 1));
+}
 
 let state = null;
 let filter = 'all';
@@ -383,17 +394,27 @@ function renderCombos() {
   $('#combo-list').innerHTML = state.combos.length
     ? state.combos.map(comboHtml).join('')
     : '<div class="empty">No combos yet.<br>Build one in the forge, or start from a recipe below 👇</div>';
-  $('#recipe-list').innerHTML = RECIPES.map((r, i) => `
-    <button class="recipe" data-recipe="${i}">
+  $('#recipe-list').innerHTML = RECIPES.map((r, i) => {
+    const level = recipeLevel(r);
+    const locked = level > state.player.level;
+    return `
+    <button class="recipe ${locked ? 'locked' : ''}" data-recipe="${i}" ${locked ? `aria-label="${esc(r.name)}, unlocks at level ${level}"` : ''}>
       <span class="emoji">${r.emoji}</span>
-      <span><b>${esc(r.name)}</b><small>${esc(r.blurb)}</small></span>
-    </button>`).join('');
+      <span class="recipe-text"><b>${esc(r.name)}</b><small>${esc(r.blurb)}</small></span>
+      ${locked ? `<span class="recipe-lock">🔒 Lv ${level}</span>` : ''}
+    </button>`;
+  }).join('');
 }
 
 $('#recipe-list').addEventListener('click', (e) => {
   const btn = e.target.closest('[data-recipe]');
   if (!btn) return;
   const recipe = RECIPES[Number(btn.dataset.recipe)];
+  const level = recipeLevel(recipe);
+  if (level > state.player.level) {
+    toast(`${recipe.emoji} ${recipe.name} is locked`, `Reach level ${level} to unlock its cards.`, 'error');
+    return;
+  }
   loadIntoForge(recipe);
   toast(`${recipe.emoji} ${recipe.name} loaded`, 'Check the folders, then press Forge.', 'ok');
 });
