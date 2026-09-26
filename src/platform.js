@@ -24,6 +24,12 @@ export function expandHome(p) {
   return p;
 }
 
+// "/home/me/Downloads" -> "~/Downloads", for friendlier log messages.
+export function tildify(p) {
+  const home = os.homedir();
+  return p === home || p.startsWith(home + path.sep) ? `~${p.slice(home.length)}` : p;
+}
+
 // Best effort: the UI also shows every notification as a toast, so a missing
 // notify-send (for example) is not fatal.
 export async function notify(title, message) {

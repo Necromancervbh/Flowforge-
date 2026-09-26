@@ -17,9 +17,13 @@ Snap cards together into combos: a **WHEN** card (trigger), optional **IF** card
 |---|---|
 | ![Editing the Invoice Catcher combo in the forge](docs/screenshots/forge.png) | ![Card collection with rarities and a locked epic card](docs/screenshots/collection.png) |
 
-| Achievements | On a phone |
+| Action cards: common → rare → epic → legendary | On a phone |
 |---|---|
-| ![Achievements dialog](docs/screenshots/achievements.png) | ![FlowForge on a narrow screen](docs/screenshots/mobile.png) |
+| ![Action cards, including a locked epic and legendary card](docs/screenshots/cards-actions.png) | ![FlowForge on a narrow screen](docs/screenshots/mobile.png) |
+
+![Achievements dialog](docs/screenshots/achievements.png)
+
+Every card has its own hand-drawn SVG illustration (`public/art.js`), so there are no image files to download and the art stays sharp at any size. Epic cards glow and legendary cards shimmer.
 
 ## Run it
 
@@ -94,7 +98,7 @@ src/game.js      levels and achievements
 src/platform.js  notifications / open / shell per OS
 src/store.js     atomic JSON save file
 src/server.js    localhost API + static UI
-public/          the card-game UI (vanilla JS)
+public/          the card-game UI (vanilla JS); card art in public/art.js
 ```
 
-Adding a card is one object in `src/cards.js`.
+Adding a card is one object in `src/cards.js`, plus its illustration in `public/art.js`.

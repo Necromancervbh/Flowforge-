@@ -11,7 +11,7 @@ import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { expandHome } from './platform.js';
+import { expandHome, tildify } from './platform.js';
 
 const TEMP_FILE = /(\.(crdownload|part|partial|tmp|download|swp)$)|(^~\$)|(^\.)/i;
 
@@ -120,7 +120,7 @@ const TRIGGERS = [
     start({ params, fire, helpers }) {
       const dir = resolveFolder(params.folder);
       if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) {
-        throw new Error(`Folder not found: ${dir}`);
+        throw new Error(`Folder not found: ${tildify(dir)}`);
       }
       const exts = String(params.extensions || '')
         .split(/[\s,]+/)
@@ -344,7 +344,7 @@ const ACTIONS = [
       helpers.markWritten(dest);
       await moveFile(src, dest);
       ctx.file = fileInfo(dest, await fsp.stat(dest));
-      return `Moved ${ctx.file.name} → ${dir}`;
+      return `Moved ${ctx.file.name} → ${tildify(dir)}`;
     },
   },
   {
@@ -415,7 +415,7 @@ const ACTIONS = [
       const dest = await uniquePath(path.join(dir, path.basename(src)));
       helpers.markWritten(dest);
       await fsp.copyFile(src, dest);
-      return `Copied ${path.basename(src)} → ${dir}`;
+      return `Copied ${path.basename(src)} → ${tildify(dir)}`;
     },
   },
   {

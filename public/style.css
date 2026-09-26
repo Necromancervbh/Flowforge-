@@ -186,14 +186,54 @@ h3 { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: 
   color: var(--type);
 }
 .card-art {
-  font-size: 34px;
-  text-align: center;
-  padding: 8px 0 4px;
-  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5));
+  position: relative;
+  height: 78px;
+  margin: 6px 0 8px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--type) 38%, transparent), transparent 70%),
+    #16120f;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rarity) 45%, transparent), inset 0 -12px 20px rgba(0, 0, 0, 0.35);
 }
+.card-art .art {
+  width: 64px;
+  height: 64px;
+  filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.55));
+  transition: transform 0.25s ease;
+}
+.card:hover .card-art .art { transform: scale(1.1) rotate(-4deg); }
+.art-fallback { font-size: 34px; }
+
+/* Epic cards glow, legendary cards shimmer. */
+.card.epic .card-art { animation: epic-glow 3s ease-in-out infinite; }
+@keyframes epic-glow {
+  50% { box-shadow: inset 0 0 0 1px var(--epic), inset 0 0 22px color-mix(in srgb, var(--epic) 45%, transparent); }
+}
+.card.legendary .card-art::after {
+  content: "";
+  position: absolute;
+  inset: -50% -120%;
+  background: linear-gradient(105deg, transparent 42%, rgba(255, 223, 150, 0.45) 50%, transparent 58%);
+  animation: shimmer 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes shimmer {
+  0% { transform: translateX(-40%); }
+  60%, 100% { transform: translateX(40%); }
+}
+.card.locked .card-art { animation: none; }
+.card.locked .card-art::after { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .card-art, .card-art::after, .card-art .art { animation: none !important; transition: none; }
+}
+
 .card-name { font-weight: 700; font-size: 13px; text-align: center; }
 .card-text { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.35; flex: 1; }
-.card-foot { display: flex; justify-content: space-between; font-size: 10px; margin-top: 6px; color: var(--rarity); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+.card-foot { display: flex; justify-content: space-between; gap: 6px; white-space: nowrap; font-size: 10px; margin-top: 6px; color: var(--rarity); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
 
 .card.locked { cursor: not-allowed; filter: grayscale(0.9) brightness(0.6); }
 .card.locked:hover { transform: none; box-shadow: none; }
@@ -243,7 +283,16 @@ h3 { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: 
 .slot.trigger { --type: var(--trigger); }
 .slot.condition { --type: var(--condition); }
 .slot-head { display: flex; align-items: center; gap: 8px; }
-.slot-head .emoji { font-size: 20px; }
+.slot-art {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 7px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--type) 35%, transparent), #16120f 75%);
+  display: grid;
+  place-items: center;
+}
+.slot-art .art { width: 28px; height: 28px; }
 .slot-head .name { font-weight: 700; flex: 1; }
 .slot-head .order { color: var(--muted); font-size: 12px; font-weight: 700; }
 .slot-tools button { border: 0; background: none; padding: 2px 5px; color: var(--muted); border-radius: 4px; }
@@ -299,6 +348,8 @@ h3 { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: 
 .combo-top .name { font-weight: 700; flex: 1; overflow-wrap: anywhere; }
 .stars { color: var(--ember-2); font-size: 12px; white-space: nowrap; }
 .chain { font-size: 18px; margin: 8px 0; display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+.chain-art { display: inline-grid; width: 30px; height: 30px; place-items: center; border-radius: 7px; background: #16120f; border: 1px solid var(--line); }
+.chain-art .art { width: 24px; height: 24px; }
 .chain .sep { font-size: 12px; color: var(--muted); }
 .combo .bar { height: 5px; }
 .combo-meta { font-size: 11px; color: var(--muted); margin-top: 6px; }
@@ -392,7 +443,7 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
 }
 
 @media (max-width: 760px) {
-  .topbar { gap: 12px; padding: 10px 16px; }
+  .topbar { gap: 12px; padding: 10px 16px; position: static; }
   .stats { margin-left: 0; }
   .board {
     grid-template-columns: 1fr;

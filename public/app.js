@@ -1,5 +1,7 @@
 // FlowForge UI: collection, forge (combo builder), combos, log and toasts.
 
+import { art } from './art.js';
+
 const $ = (sel) => document.querySelector(sel);
 
 const esc = (value) =>
@@ -118,13 +120,13 @@ function renderPlayer(previousLevel) {
 
 // ---------- collection ----------
 function cardHtml(card) {
-  const foot = card.type === 'action' ? `saves ${card.saves}s` : TYPE_LABEL[card.type];
+  const foot = card.type === 'action' ? `⏳ ${card.saves}s` : TYPE_LABEL[card.type];
   return `
     <div class="card ${card.type} ${card.rarity} ${card.unlocked ? '' : 'locked'}"
          data-card="${card.id}" draggable="${card.unlocked}" tabindex="${card.unlocked ? 0 : -1}"
          role="button" aria-label="${esc(card.name)}${card.unlocked ? '' : `, locked until level ${card.unlock}`}">
       <div class="card-type">${card.type.toUpperCase()}</div>
-      <div class="card-art">${card.emoji}</div>
+      <div class="card-art">${art(card.id, card.emoji)}</div>
       <div class="card-name">${esc(card.name)}</div>
       <div class="card-text">${esc(card.text)}</div>
       <div class="card-foot"><span>${card.rarity}</span><span>${foot}</span></div>
@@ -225,7 +227,7 @@ function slotHtml(lane, index, slot, count) {
   return `
     <div class="slot ${card.type}">
       <div class="slot-head">
-        ${order}<span class="emoji">${card.emoji}</span><span class="name">${esc(card.name)}</span>
+        ${order}<span class="slot-art">${art(card.id, card.emoji)}</span><span class="name">${esc(card.name)}</span>
         <span class="slot-tools">${move}<button data-remove data-lane="${lane}" data-index="${index}" title="Remove">✕</button></span>
       </div>
       ${card.params.length ? `<div class="slot-fields">${card.params.map((p) => fieldHtml(lane, index, p, slot.params[p.key] ?? '')).join('')}</div>` : ''}
@@ -352,7 +354,7 @@ function comboHtml(c) {
   const chainCards = [c.trigger, ...c.conditions, ...c.actions].map((s) => cardById(s.card));
   const chain = chainCards.map((card, i) => {
     const sep = i === 0 ? '' : i === 1 + c.conditions.length ? '<span class="sep">➜</span>' : '<span class="sep">·</span>';
-    return `${sep}<span title="${esc(card?.name)}">${card?.emoji ?? '?'}</span>`;
+    return `${sep}<span class="chain-art" title="${esc(card?.name)}">${card ? art(card.id, card.emoji) : '?'}</span>`;
   }).join('');
   const stars = '★'.repeat(Math.min(c.level.level, 5)) + (c.level.level > 5 ? ` +${c.level.level - 5}` : '');
   const error = c.armError || c.lastError;
