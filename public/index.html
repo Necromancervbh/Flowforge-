@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowForge</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚒️</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-icon">⚒️</span> Flow<span>Forge</span></div>
+    <div class="player">
+      <div class="level-badge" id="level-badge" title="Player level">1</div>
+      <div class="xp">
+        <div class="xp-label"><span id="xp-text">0 / 100 XP</span><span class="muted" id="next-unlock"></span></div>
+        <div class="bar"><div class="bar-fill" id="xp-fill"></div></div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat" title="Manual work saved"><span>⏳</span><b id="stat-saved">0s</b></div>
+      <div class="stat" title="Successful runs"><span>⚙️</span><b id="stat-runs">0</b></div>
+      <button class="stat stat-btn" id="open-achievements" title="Achievements"><span>🏆</span><b id="stat-ach">0/0</b></button>
+    </div>
+  </header>
+
+  <main class="board">
+    <section class="panel collection">
+      <div class="panel-head">
+        <h2>Collection</h2>
+        <div class="tabs" id="tabs">
+          <button data-filter="all" class="active">All</button>
+          <button data-filter="trigger">When</button>
+          <button data-filter="condition">If</button>
+          <button data-filter="action">Then</button>
+        </div>
+      </div>
+      <p class="hint">Click or drag a card into the forge. Locked cards unlock as you level up.</p>
+      <div class="card-grid" id="card-grid"></div>
+    </section>
+
+    <section class="panel forge">
+      <div class="panel-head">
+        <h2 id="forge-title">The Forge</h2>
+        <button class="ghost small" id="forge-reset">Clear</button>
+      </div>
+      <input class="combo-name" id="combo-name" placeholder="Name your combo… e.g. Downloads Sorter" maxlength="60">
+      <div class="lane" data-lane="trigger">
+        <div class="lane-label"><span class="pill trigger">WHEN</span> one trigger card</div>
+        <div class="lane-body" id="lane-trigger"></div>
+      </div>
+      <div class="lane" data-lane="condition">
+        <div class="lane-label"><span class="pill condition">IF</span> optional filters, all must pass</div>
+        <div class="lane-body" id="lane-condition"></div>
+      </div>
+      <div class="lane" data-lane="action">
+        <div class="lane-label"><span class="pill action">THEN</span> actions, run in order</div>
+        <div class="lane-body" id="lane-action"></div>
+      </div>
+      <details class="vars">
+        <summary>✨ Magic words you can use in any text box</summary>
+        <div class="var-chips" id="var-chips"></div>
+      </details>
+      <div class="forge-foot">
+        <div class="forge-error" id="forge-error"></div>
+        <button class="primary" id="forge-save">⚒️ Forge combo</button>
+      </div>
+    </section>
+
+    <section class="panel combos">
+      <div class="panel-head"><h2>Your Combos</h2></div>
+      <div id="combo-list"></div>
+      <div class="recipes">
+        <h3>Starter recipes</h3>
+        <div id="recipe-list"></div>
+      </div>
+    </section>
+
+    <section class="panel activity">
+      <div class="panel-head"><h2>Battle Log</h2></div>
+      <ol id="activity-list"></ol>
+    </section>
+  </main>
+
+  <dialog id="achievements">
+    <div class="dialog-head">
+      <h2>🏆 Achievements</h2>
+      <button class="ghost small" id="close-achievements">Close</button>
+    </div>
+    <div class="ach-grid" id="ach-grid"></div>
+  </dialog>
+
+  <div class="toasts" id="toasts"></div>
+  <script src="app.js" type="module"></script>
+</body>
+</html>
