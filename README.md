@@ -1,5 +1,7 @@
 # ⚒️ FlowForge
 
+[![Tests](https://github.com/Necromancervbh/Flowforge-/actions/workflows/test.yml/badge.svg)](https://github.com/Necromancervbh/Flowforge-/actions/workflows/test.yml)
+
 **A deckbuilder where every card is a real automation on your PC.**
 
 Snap cards together into combos: a **WHEN** card (trigger), optional **IF** cards (filters) and **THEN** cards (actions). Every combo actually runs on your computer, sorting downloads, reminding you to take breaks, logging files, pinging Discord. Each successful run earns XP, levels up the combo and your player level, and unlocks rarer cards.
@@ -103,7 +105,7 @@ MIT, see [LICENSE](LICENSE).
 ## Develop
 
 ```bash
-npm test     # node:test, no dependencies
+npm test     # node:test, no dependencies; CI runs it on Windows, macOS and Linux
 ```
 
 ```
