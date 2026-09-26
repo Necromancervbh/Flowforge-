@@ -13,7 +13,9 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { expandHome, tildify } from './platform.js';
 
-const TEMP_FILE = /(\.(crdownload|part|partial|tmp|download|swp)$)|(^~\$)|(^\.)/i;
+export const CLIPBOARD_POLL_MS = 1500;
+
+const TEMP_FILE =/(\.(crdownload|part|partial|tmp|download|swp)$)|(^~\$)|(^\.)/i;
 
 export function fileInfo(fullPath, stat) {
   const ext = path.extname(fullPath).slice(1).toLowerCase();
@@ -185,6 +187,48 @@ const TRIGGERS = [
         }
       };
       const timer = setInterval(tick, 15000);
+      return () => clearInterval(timer);
+    },
+  },
+  {
+    id: 'clipboard',
+    name: 'Copycat',
+    emoji: '📋',
+    rarity: 'rare',
+    unlock: 2,
+    text: 'Fires when you copy new text. Use {{clip.text}} in other cards.',
+    params: [],
+    start({ fire, problem, helpers }) {
+      let last = null;
+      let lastError = null;
+      let busy = false;
+      const poll = async () => {
+        if (busy) return;
+        busy = true;
+        try {
+          const text = (await helpers.platform.readClipboard()).slice(0, 10000);
+          if (lastError) problem(null);
+          lastError = null;
+          // Blank copies are ignored; the first read is only a baseline so
+          // what was already on the clipboard doesn't fire.
+          if (text.trim() || last === null) {
+            if (last !== null && text !== last) {
+              fire({ clip: { text, snippet: text.trim().slice(0, 100) } });
+            }
+            last = text;
+          }
+        } catch (err) {
+          if (err.message !== lastError) {
+            helpers.log('error', `Copycat can't read the clipboard: ${err.message}`);
+            problem(err.message);
+          }
+          lastError = err.message;
+        } finally {
+          busy = false;
+        }
+      };
+      poll();
+      const timer = setInterval(poll, CLIPBOARD_POLL_MS);
       return () => clearInterval(timer);
     },
   },

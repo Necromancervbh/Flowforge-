@@ -46,6 +46,15 @@ const ART = {
     <path fill="#3b7fd1" d="M5 42H59V57H5Z"/>
     <path fill="none" stroke="#9fd0ff" stroke-width="2.5" d="M12 48Q16 45 20 48T28 48M36 52Q40 49 44 52T52 52"/>`,
 
+  clipboard: `
+    <rect x="11" y="10" width="42" height="48" rx="5" fill="#b06b35"/>
+    <rect x="17" y="17" width="30" height="36" rx="2" fill="#fff4e6"/>
+    ${lines(22, 42, [27, 34, 41])}
+    <path stroke="#ef5b5b" stroke-width="2.5" d="M22 47H34"/>
+    <rect x="23" y="5" width="18" height="10" rx="3" fill="#b0b8c4"/>
+    <circle cx="32" cy="9.5" r="2" fill="#221d19" stroke="none"/>
+    ${star(54, 22, 6)}${star(9, 46, 4)}`,
+
   'on-start': `
     <circle cx="32" cy="32" r="25" fill="#1f3b2d"/>
     <circle cx="32" cy="32" r="19" fill="#27543c" stroke-width="0"/>
