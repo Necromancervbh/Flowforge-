@@ -102,3 +102,20 @@ test('Play can run a file combo on a chosen test file', async () => {
   assert.ok(fs.existsSync(path.join(sorted, 'report.pdf')));
   assert.equal(fs.existsSync(file), false);
 });
+
+test('pause all and resume all', async () => {
+  for (const name of ['A', 'B']) {
+    await fetch(`${base}/api/combos`, { method: 'POST', headers, body: JSON.stringify({ name, trigger: { card: 'manual' }, actions: [{ card: 'notify' }] }) });
+  }
+  const pause = await (await fetch(`${base}/api/combos/all/enabled`, { method: 'POST', headers, body: '{"enabled":false}' })).json();
+  assert.ok(pause.changed >= 2);
+  let state = await (await fetch(`${base}/api/state`)).json();
+  assert.ok(state.combos.every((c) => !c.enabled));
+
+  const again = await (await fetch(`${base}/api/combos/all/enabled`, { method: 'POST', headers, body: '{"enabled":false}' })).json();
+  assert.equal(again.changed, 0, 'nothing left to pause');
+
+  await fetch(`${base}/api/combos/all/enabled`, { method: 'POST', headers, body: '{"enabled":true}' });
+  state = await (await fetch(`${base}/api/state`)).json();
+  assert.ok(state.combos.every((c) => c.enabled));
+});

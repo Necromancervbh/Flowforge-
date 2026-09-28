@@ -85,6 +85,10 @@ export function createServer(engine, { port }) {
 
     if (parts[1] === 'combos') {
       const id = parts[2];
+      if (req.method === 'POST' && id === 'all' && parts[3] === 'enabled') {
+        const { enabled } = await readJson(req);
+        return send(res, 200, { changed: engine.setAllEnabled(enabled) });
+      }
       if (req.method === 'POST' && !id) return send(res, 201, engine.saveCombo(await readJson(req)));
       if (req.method === 'PUT' && id && !parts[3]) return send(res, 200, engine.saveCombo(await readJson(req), id));
       if (req.method === 'DELETE' && id) {

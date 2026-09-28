@@ -423,7 +423,27 @@ function comboHtml(c) {
     </div>`;
 }
 
+function renderToggleAll() {
+  const btn = $('#toggle-all');
+  const anyOn = state.combos.some((c) => c.enabled);
+  btn.hidden = state.combos.length === 0;
+  btn.textContent = anyOn ? '⏸ Pause all' : '▶ Resume all';
+  btn.title = anyOn ? 'Pause every combo (e.g. while presenting or gaming)' : 'Turn every combo back on';
+  btn.dataset.enable = String(!anyOn);
+}
+
+$('#toggle-all').addEventListener('click', async (e) => {
+  const enable = e.currentTarget.dataset.enable === 'true';
+  try {
+    const { changed } = await api('POST', '/api/combos/all/enabled', { enabled: enable });
+    toast(enable ? '▶ Combos resumed' : '⏸ All combos paused', `${changed} combo${changed === 1 ? '' : 's'} ${enable ? 'back on' : 'resting'}.`, 'ok');
+  } catch (err) {
+    toast('Could not change combos', err.message, 'error');
+  }
+});
+
 function renderCombos() {
+  renderToggleAll();
   $('#combo-list').innerHTML = state.combos.length
     ? state.combos.map(comboHtml).join('')
     : '<div class="empty">No combos yet.<br>Build one in the forge, or start from a recipe below 👇</div>';
