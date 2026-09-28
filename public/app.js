@@ -564,6 +564,29 @@ $('#import-combo').addEventListener('click', () => {
 // ---------- activity ----------
 const LOG_ICON = { ok: '✔', error: '✖', skip: '⏸', info: '•' };
 
+// Oldest first, one line per entry: "2026-09-28 09:15:02  OK     Sorter: Moved …".
+function activityText(entries) {
+  const pad = (n) => String(n).padStart(2, '0');
+  return [...entries].reverse().map((a) => {
+    const d = new Date(a.at);
+    const stamp = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    return `${stamp}  ${a.level.toUpperCase().padEnd(5)}  ${a.message}`;
+  }).join('\n');
+}
+
+$('#save-log').addEventListener('click', () => {
+  if (!state.activity.length) {
+    toast('Nothing to save yet', 'The Battle Log is empty.');
+    return;
+  }
+  const blob = new Blob([`FlowForge Battle Log\n\n${activityText(state.activity)}\n`], { type: 'text/plain' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `flowforge-log-${new Date().toISOString().slice(0, 10)}.txt`;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+});
+
 function renderActivity() {
   $('#activity-list').innerHTML = state.activity.length
     ? state.activity.map((a) => {

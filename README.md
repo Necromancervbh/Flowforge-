@@ -54,6 +54,8 @@ New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screens
 
 **Find cards fast:** press `/` to search the collection by name, description, rarity or type (`then rare` shows rare action cards). `Esc` clears the search.
 
+**Keep a record:** **💾 Save log** downloads the Battle Log as a text file (oldest entry first).
+
 **Take a break:** **⏸ Pause all** stops every combo at once (handy while presenting or gaming), and **▶ Resume all** turns them back on.
 
 **Make variations:** **⧉ Copy** opens a duplicate of a combo in the forge as *"Name (copy)"*, so you can tweak it without rebuilding.
