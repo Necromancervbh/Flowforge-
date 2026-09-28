@@ -43,6 +43,8 @@ Options: `PORT=4778 npm start` uses another port, `FLOWFORGE_DATA=/some/dir` sav
 
 New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screenshot Stash, Stretch Break, Link Collector) to load a ready-made combo into the forge. Recipes that use cards you haven't unlocked yet show 🔒 and the level they need.
 
+**Test a file combo:** press **▶ Play** on a combo that starts with *File Appears* and paste the path of a file to try it on. The combo really runs, so that file may be moved or renamed.
+
 **Find cards fast:** press `/` to search the collection by name, description, rarity or type (`then rare` shows rare action cards). `Esc` clears the search.
 
 **Share combos with friends:** press **📤 Share** on a combo to copy a code like `FF1-eyJu…`, and your friend pastes it with **📥 Import code**. Secret settings such as Discord webhook URLs are left out of the code.
