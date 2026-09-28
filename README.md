@@ -47,6 +47,8 @@ New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screens
 
 **Find cards fast:** press `/` to search the collection by name, description, rarity or type (`then rare` shows rare action cards). `Esc` clears the search.
 
+**Take a break:** **⏸ Pause all** stops every combo at once (handy while presenting or gaming), and **▶ Resume all** turns them back on.
+
 **Make variations:** **⧉ Copy** opens a duplicate of a combo in the forge as *"Name (copy)"*, so you can tweak it without rebuilding.
 
 **Share combos with friends:** press **📤 Share** on a combo to copy a code like `FF1-eyJu…`, and your friend pastes it with **📥 Import code**. Secret settings such as Discord webhook URLs are left out of the code.

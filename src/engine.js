@@ -301,6 +301,21 @@ export class Engine extends EventEmitter {
     return combo;
   }
 
+  // Pause or resume every combo at once. Returns how many changed.
+  setAllEnabled(enabled) {
+    const target = Boolean(enabled);
+    const changed = this.store.combos.filter((c) => c.enabled !== target);
+    for (const combo of changed) {
+      combo.enabled = target;
+      this.arm(combo);
+    }
+    if (changed.length) {
+      this.log('info', `${target ? 'Resumed' : 'Paused'} ${changed.length} combo${changed.length === 1 ? '' : 's'}.`);
+      this.changed();
+    }
+    return changed.length;
+  }
+
   deleteCombo(id) {
     const index = this.store.combos.findIndex((c) => c.id === id);
     if (index === -1) return false;
