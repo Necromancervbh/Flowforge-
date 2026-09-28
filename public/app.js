@@ -416,6 +416,7 @@ function comboHtml(c) {
       <div class="combo-actions">
         <button class="ghost small play" data-play>▶ Play</button>
         <button class="ghost small" data-edit>✎ Edit</button>
+        <button class="ghost small" data-duplicate title="Open a copy of this combo in the forge">⧉ Copy</button>
         <button class="ghost small" data-share title="Copy a share code for this combo">📤 Share</button>
         <button class="ghost small" data-delete title="Scrap combo">🗑</button>
       </div>
@@ -476,6 +477,9 @@ $('#combo-list').addEventListener('click', async (e) => {
       }
     } else if (e.target.closest('[data-edit]')) {
       loadIntoForge(combo, id);
+    } else if (e.target.closest('[data-duplicate]')) {
+      loadIntoForge({ ...combo, name: copyName(combo.name) });
+      toast('⧉ Copy ready in the forge', 'Change what you like, then press Forge.', 'ok');
     } else if (e.target.closest('[data-share]')) {
       await shareCombo(combo);
     } else if (e.target.closest('[data-delete]')) {
@@ -501,6 +505,17 @@ $('#combo-list').addEventListener('change', async (e) => {
     toast('Could not toggle', err.message, 'error');
   }
 });
+
+// "Sorter" -> "Sorter (copy)", then "Sorter (copy 2)", … never clashing with an existing combo.
+function copyName(name) {
+  const base = name.replace(/ \(copy(?: \d+)?\)$/, '');
+  const taken = new Set(state.combos.map((c) => c.name));
+  for (let n = 1; ; n++) {
+    const suffix = ` (copy${n === 1 ? '' : ` ${n}`})`;
+    const candidate = base.slice(0, 60 - suffix.length) + suffix;
+    if (!taken.has(candidate)) return candidate;
+  }
+}
 
 // ---------- sharing ----------
 async function shareCombo(combo) {

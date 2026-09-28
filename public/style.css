@@ -357,8 +357,8 @@ h3 { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: 
 .combo .bar { height: 5px; }
 .combo-meta { font-size: 11px; color: var(--muted); margin-top: 6px; }
 .combo-error { font-size: 11px; color: var(--danger); margin-top: 6px; }
-.combo-actions { display: flex; gap: 6px; margin-top: 10px; }
-.combo-actions button { flex: 1; }
+.combo-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.combo-actions button { flex: 1 1 auto; white-space: nowrap; }
 .combo-actions .play { border-color: var(--action); color: var(--action); font-weight: 700; }
 
 .switch { position: relative; width: 34px; height: 20px; flex: none; }
