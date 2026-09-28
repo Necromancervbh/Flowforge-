@@ -609,6 +609,27 @@ function renderAchievements() {
 $('#open-achievements').addEventListener('click', () => $('#achievements').showModal());
 $('#close-achievements').addEventListener('click', () => $('#achievements').close());
 
+// ---------- theme ----------
+function applyTheme(theme) {
+  const light = theme === 'light';
+  if (light) document.documentElement.dataset.theme = 'light';
+  else delete document.documentElement.dataset.theme;
+  const btn = $('#theme-toggle');
+  btn.textContent = light ? '🌙' : '☀️';
+  btn.title = btn.ariaLabel = light ? 'Switch to dark theme' : 'Switch to light theme';
+}
+
+applyTheme(document.documentElement.dataset.theme);
+$('#theme-toggle').addEventListener('click', () => {
+  const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+  applyTheme(next);
+  try {
+    localStorage.setItem('flowforge-theme', next);
+  } catch {
+    // Private mode or blocked storage: the theme still applies for this visit.
+  }
+});
+
 // ---------- toasts ----------
 function toast(title, message = '', kind = '') {
   const el = document.createElement('div');

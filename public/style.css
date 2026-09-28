@@ -18,7 +18,37 @@
   --danger: #ff5c5c;
   --radius: 12px;
   --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --topbar-bg: rgba(20, 17, 15, 0.85);
+  --legendary-bg: #3a2a17;
+  --toast-glow: #3a2614;
+  --glow: rgba(255, 138, 61, 0.12);
   color-scheme: dark;
+}
+
+/* Light theme: parchment instead of the forge at night. Card art windows
+   stay dark on purpose, like the art frames on real cards. */
+:root[data-theme="light"] {
+  --bg: #f4ede3;
+  --bg-2: #ebe2d5;
+  --panel: #fffaf2;
+  --panel-2: #f2e9dc;
+  --line: #d9ccb9;
+  --text: #2b211a;
+  --muted: #76675a;
+  --ember: #d9621b;
+  --ember-2: #c2750e;
+  --common: #8a7e70;
+  --rare: #2f7fd6;
+  --epic: #8b46d6;
+  --legendary: #d97a00;
+  --danger: #cf3333;
+  --action: #23945f;
+  --condition: #b98a0f;
+  --topbar-bg: rgba(244, 237, 227, 0.9);
+  --legendary-bg: #f7e3c4;
+  --toast-glow: #f7dfc0;
+  --glow: rgba(217, 98, 27, 0.1);
+  color-scheme: light;
 }
 
 * { box-sizing: border-box; }
@@ -27,7 +57,7 @@ body {
   margin: 0;
   font-family: var(--font);
   background:
-    radial-gradient(1200px 500px at 50% -200px, rgba(255, 138, 61, 0.12), transparent),
+    radial-gradient(1200px 500px at 50% -200px, var(--glow), transparent),
     var(--bg);
   color: var(--text);
   min-height: 100vh;
@@ -66,7 +96,7 @@ h3 { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: 
   gap: 24px;
   padding: 12px 20px;
   border-bottom: 1px solid var(--line);
-  background: rgba(20, 17, 15, 0.85);
+  background: var(--topbar-bg);
   backdrop-filter: blur(6px);
   position: sticky;
   top: 0;
@@ -121,6 +151,7 @@ h3 { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: 
 }
 .stat-btn:hover { border-color: var(--ember); }
 .stat.cold { filter: grayscale(1); opacity: 0.6; }
+.theme-toggle { font-size: 15px; line-height: 1; }
 
 /* ---------- board ---------- */
 .board {
@@ -178,7 +209,7 @@ h3 { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: 
 .card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45), 0 0 14px color-mix(in srgb, var(--rarity) 40%, transparent); }
 .card.rare { --rarity: var(--rare); }
 .card.epic { --rarity: var(--epic); }
-.card.legendary { --rarity: var(--legendary); background: linear-gradient(170deg, #3a2a17, var(--bg-2)); }
+.card.legendary { --rarity: var(--legendary); background: linear-gradient(170deg, var(--legendary-bg), var(--bg-2)); }
 .card.trigger { --type: var(--trigger); }
 .card.condition { --type: var(--condition); }
 
@@ -431,7 +462,7 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
   font-size: 13px;
 }
 .toast b { display: block; margin-bottom: 2px; }
-.toast.level, .toast.achievement { border-left-color: var(--ember-2); background: linear-gradient(90deg, #3a2614, var(--panel-2)); }
+.toast.level, .toast.achievement { border-left-color: var(--ember-2); background: linear-gradient(90deg, var(--toast-glow), var(--panel-2)); }
 .toast.combo { border-left-color: var(--rare); }
 .toast.error { border-left-color: var(--danger); }
 .toast.ok { border-left-color: var(--action); }
