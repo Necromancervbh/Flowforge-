@@ -170,7 +170,7 @@ test('shell commands receive file details as env vars, not templated text', asyn
   assert.equal(env.FF_FILE_NAME, '$(rm -rf).txt');
 });
 
-test('the File Appears trigger fires for new files and ignores our own writes', async () => {
+test('the File Appears trigger fires for new files and ignores our own writes', { timeout: 15000 }, async () => {
   const inbox = path.join(dir, 'watch');
   const out = path.join(inbox, 'copies');
   fs.mkdirSync(inbox);
@@ -186,6 +186,8 @@ test('the File Appears trigger fires for new files and ignores our own writes', 
   const done = new Promise((resolve) => {
     engine.on('event', (e) => e.type === 'activity' && e.entry.level === 'ok' && e.entry.comboId === combo.id && resolve());
   });
+  // macOS (FSEvents) can miss files created the instant a watch starts.
+  await new Promise((r) => setTimeout(r, 500));
   fs.writeFileSync(path.join(inbox, 'ignored.jpg'), 'x');
   fs.writeFileSync(path.join(inbox, 'note.txt'), 'hello');
   await done;
