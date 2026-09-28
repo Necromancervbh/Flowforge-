@@ -38,6 +38,12 @@ export class Engine extends EventEmitter {
         const at = this.written.get(path.resolve(p));
         return at !== undefined && Date.now() - at < WRITTEN_TTL;
       },
+      // Text FlowForge itself put on the clipboard, so Copycat can ignore it
+      // (otherwise Copycat → Echo would loop forever).
+      markClipboard: (text) => {
+        this.ownClipboard = String(text).slice(0, 10000).trimEnd();
+      },
+      isOwnClipboard: (text) => this.ownClipboard !== undefined && String(text).slice(0, 10000).trimEnd() === this.ownClipboard,
     };
   }
 

@@ -226,7 +226,7 @@ const TRIGGERS = [
           // Blank copies are ignored; the first read is only a baseline so
           // what was already on the clipboard doesn't fire.
           if (text.trim() || last === null) {
-            if (last !== null && text !== last) {
+            if (last !== null && text !== last && !helpers.isOwnClipboard(text)) {
               fire({ clip: { text, snippet: text.trim().slice(0, 100) } });
             }
             last = text;
@@ -441,6 +441,23 @@ const ACTIONS = [
       helpers.markWritten(file);
       await fsp.appendFile(file, `${params.line}\n`);
       return `Wrote a line to ${path.basename(file)}`;
+    },
+  },
+  {
+    id: 'copy-text',
+    name: 'Echo',
+    emoji: '📎',
+    rarity: 'rare',
+    unlock: 2,
+    saves: 10,
+    text: 'Copy text to your clipboard, e.g. the path of a new download, ready to paste.',
+    params: [{ key: 'text', label: 'Text to copy', type: 'text', default: '{{file.path}}', required: true }],
+    async run(params, _ctx, helpers) {
+      const text = String(params.text);
+      if (!text.trim()) throw new Error('Nothing to copy: the text is empty');
+      helpers.markClipboard(text);
+      await helpers.platform.writeClipboard(text);
+      return `Copied "${text.length > 40 ? `${text.slice(0, 40)}…` : text}" to the clipboard`;
     },
   },
   {

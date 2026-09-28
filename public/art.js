@@ -139,6 +139,14 @@ const ART = {
     <path fill="none" stroke="#c9b8a3" stroke-width="1.5" d="M55 10Q48 22 42 36"/>
     <path stroke="${INK}" stroke-width="2.5" d="M40 40L36 46"/>`,
 
+  'copy-text': `
+    <rect x="18" y="16" width="34" height="42" rx="4" fill="#9fd0ff"/>
+    ${lines(24, 46, [27, 34, 41], '#5d9fd6')}
+    <rect x="10" y="6" width="34" height="42" rx="4" fill="#fff4e6"/>
+    ${lines(16, 38, [16, 23, 30], '#c9b8a3')}
+    <path fill="none" stroke="#8d96a3" stroke-width="3.5" d="M47 30V12A6 6 0 0 0 35 12V34A3 3 0 0 0 41 34V16"/>
+    ${star(54, 50, 6)}`,
+
   'open-url': `
     <circle cx="32" cy="32" r="26" fill="#1e3a5f"/>
     <circle cx="32" cy="32" r="20" fill="#2f6fb5" stroke-width="0"/>
