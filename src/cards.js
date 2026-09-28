@@ -16,6 +16,7 @@ import { pipeline } from 'node:stream/promises';
 import { expandHome, tildify } from './platform.js';
 
 export const CLIPBOARD_POLL_MS = 1500;
+export const FILE_POLL_MS = 1000;
 
 const TEMP_FILE =/(\.(crdownload|part|partial|tmp|download|swp)$)|(^~\$)|(^\.)/i;
 
@@ -165,6 +166,35 @@ const TRIGGERS = [
       });
       watcher.on('error', (err) => helpers.log('error', `Stopped watching ${dir}: ${err.message}`));
       return () => watcher.close();
+    },
+  },
+  {
+    id: 'file-changed',
+    name: 'Tripwire',
+    emoji: '✏️',
+    rarity: 'rare',
+    unlock: 3,
+    text: 'Fires when a specific file is edited and saved, e.g. your notes or a game save.',
+    params: [{ key: 'file', label: 'Watch file', type: 'text', placeholder: '~/Documents/notes.txt', required: true }],
+    start({ params, fire, problem, helpers }) {
+      const file = path.resolve(expandHome(String(params.file || '').trim()));
+      const stat = fs.statSync(file, { throwIfNoEntry: false });
+      if (!stat?.isFile()) throw new Error(`File not found: ${tildify(file)}`);
+      // Polling is slower than fs.watch but reliable for single files on
+      // every OS, including editors that save by replacing the file.
+      const listener = (curr, prev) => {
+        if (curr.mtimeMs === prev.mtimeMs && curr.size === prev.size) return;
+        if (!curr.isFile() || curr.nlink === 0) {
+          problem(`File not found: ${tildify(file)}`);
+          return;
+        }
+        problem(null);
+        // Our own writes (e.g. Scribe logging into this file) must not loop.
+        if (helpers.wasWrittenByUs(file)) return;
+        fire({ file: fileInfo(file, curr) });
+      };
+      fs.watchFile(file, { interval: FILE_POLL_MS }, listener);
+      return () => fs.unwatchFile(file, listener);
     },
   },
   {

@@ -291,6 +291,42 @@ test('Copycat shows a clipboard problem on its combo, then clears it once fixed'
   assert.equal(armError(), null);
 });
 
+test('Tripwire fires when a watched file is edited, but not for our own writes', { timeout: 20000 }, async () => {
+  const { FILE_POLL_MS } = await import('../src/cards.js');
+  const notes = path.join(dir, 'notes.txt');
+  const backups = path.join(dir, 'backups');
+  fs.writeFileSync(notes, 'v1');
+  engine.store.profile.xp = 10000;
+  const combo = engine.saveCombo({
+    name: 'Backup notes',
+    trigger: { card: 'file-changed', params: { file: notes } },
+    actions: [
+      { card: 'copy-file', params: { destination: backups } },
+      // Logging into the watched file itself must not re-trigger the combo.
+      { card: 'write-log', params: { file: notes, line: 'backed up at {{time}}' } },
+    ],
+  });
+  assert.equal(engine.armErrors.get(combo.id), undefined);
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  await wait(FILE_POLL_MS * 1.5);
+  fs.writeFileSync(notes, 'v2 with more text');
+  await wait(FILE_POLL_MS * 4);
+
+  assert.equal(combo.runs, 1);
+  assert.deepEqual(fs.readdirSync(backups), ['notes.txt']);
+  assert.match(fs.readFileSync(path.join(backups, 'notes.txt'), 'utf8'), /^v2 with more text/);
+});
+
+test('Tripwire reports a missing file', () => {
+  engine.store.profile.xp = 10000;
+  const combo = engine.saveCombo({
+    name: 'Ghost',
+    trigger: { card: 'file-changed', params: { file: path.join(dir, 'nope.txt') } },
+    actions: [{ card: 'notify' }],
+  });
+  assert.match(engine.snapshot().combos.find((c) => c.id === combo.id).armError, /File not found/);
+});
+
 test('a missing watch folder is reported instead of crashing', () => {
   const combo = engine.saveCombo({
     name: 'Broken',
