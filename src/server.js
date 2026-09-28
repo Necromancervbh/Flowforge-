@@ -9,7 +9,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Store } from './store.js';
 import { Engine } from './engine.js';
-import { openTarget } from './platform.js';
+import { openTarget, expandHome } from './platform.js';
+import { fileInfo } from './cards.js';
 
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const MIME = {
@@ -91,7 +92,16 @@ export function createServer(engine, { port }) {
       }
       if (req.method === 'POST' && parts[3] === 'play') {
         if (!engine.store.combos.some((c) => c.id === id)) return send(res, 404, { error: 'Combo not found' });
-        return send(res, 200, await engine.fire(id, {}, 'manual'));
+        // Optional test file, so file combos can be played by hand.
+        const { file } = await readJson(req);
+        const extra = {};
+        if (file) {
+          const full = path.resolve(expandHome(String(file).trim().replace(/^["']|["']$/g, '')));
+          const stat = fs.statSync(full, { throwIfNoEntry: false });
+          if (!stat?.isFile()) return send(res, 400, { error: `No file at ${full}` });
+          extra.file = fileInfo(full, stat);
+        }
+        return send(res, 200, await engine.fire(id, extra, 'manual'));
       }
       if (req.method === 'POST' && parts[3] === 'enabled') {
         const { enabled } = await readJson(req);

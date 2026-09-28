@@ -79,3 +79,26 @@ test('create, play, pause and delete a combo over the API', async () => {
   assert.equal((await fetch(`${base}/api/combos/${id}`, { method: 'DELETE', headers })).status, 200);
   assert.equal((await fetch(`${base}/api/combos/${id}/play`, { method: 'POST', headers })).status, 404);
 });
+
+test('Play can run a file combo on a chosen test file', async () => {
+  const inbox = path.join(dir, 'inbox');
+  const sorted = path.join(dir, 'sorted');
+  fs.mkdirSync(inbox, { recursive: true });
+  const file = path.join(dir, 'report.pdf');
+  fs.writeFileSync(file, 'pdf');
+  const body = JSON.stringify({
+    name: 'Sorter',
+    trigger: { card: 'file-appears', params: { folder: inbox } },
+    actions: [{ card: 'move-file', params: { destination: sorted } }],
+  });
+  const { id } = await (await fetch(`${base}/api/combos`, { method: 'POST', headers, body })).json();
+
+  const missing = await fetch(`${base}/api/combos/${id}/play`, { method: 'POST', headers, body: JSON.stringify({ file: path.join(dir, 'nope.pdf') }) });
+  assert.equal(missing.status, 400);
+  assert.match((await missing.json()).error, /No file at/);
+
+  const played = await (await fetch(`${base}/api/combos/${id}/play`, { method: 'POST', headers, body: JSON.stringify({ file: `"${file}"` }) })).json();
+  assert.equal(played.status, 'ok', played.error);
+  assert.ok(fs.existsSync(path.join(sorted, 'report.pdf')));
+  assert.equal(fs.existsSync(file), false);
+});

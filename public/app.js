@@ -64,6 +64,7 @@ let state = null;
 let filter = 'all';
 let forge = emptyForge();
 let lastFocusedInput = null;
+let lastTestFile = '';
 
 function emptyForge() {
   return { editingId: null, name: '', trigger: null, conditions: [], actions: [] };
@@ -457,7 +458,14 @@ $('#combo-list').addEventListener('click', async (e) => {
   const combo = state.combos.find((c) => c.id === id);
   try {
     if (e.target.closest('[data-play]')) {
-      const result = await api('POST', `/api/combos/${id}/play`);
+      let body;
+      if (combo.trigger.card === 'file-appears') {
+        const file = prompt(`Test "${combo.name}" on which file? Paste its full path.\nThe combo really runs, so the file may be moved or renamed.`, lastTestFile);
+        if (!file) return;
+        lastTestFile = file;
+        body = { file };
+      }
+      const result = await api('POST', `/api/combos/${id}/play`, body);
       if (result.status === 'ok') {
         el.classList.add('flash');
         setTimeout(() => el.classList.remove('flash'), 900);
