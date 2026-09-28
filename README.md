@@ -19,11 +19,13 @@ Snap cards together into combos: a **WHEN** card (trigger), optional **IF** card
 |---|---|
 | ![Editing the Invoice Catcher combo in the forge](docs/screenshots/forge.png) | ![Card collection with rarities and a locked epic card](docs/screenshots/collection.png) |
 
-| Action cards: common → rare → epic → legendary | On a phone |
+| Light theme | Action cards: common → rare → epic → legendary |
 |---|---|
-| ![Action cards, including a locked epic and legendary card](docs/screenshots/cards-actions.png) | ![FlowForge on a narrow screen](docs/screenshots/mobile.png) |
+| ![FlowForge in the light theme](docs/screenshots/light.png) | ![Action cards, including a locked epic and legendary card](docs/screenshots/cards-actions.png) |
 
-![Achievements dialog](docs/screenshots/achievements.png)
+| On a phone | Achievements |
+|---|---|
+| ![FlowForge on a narrow screen](docs/screenshots/mobile.png) | ![Achievements dialog](docs/screenshots/achievements.png) |
 
 Every card has its own hand-drawn SVG illustration (`public/art.js`), so there are no image files to download and the art stays sharp at any size. Epic cards glow and legendary cards shimmer.
 
@@ -125,6 +127,10 @@ The **Arcane Command** card is the exception: it gets these as environment varia
 - The engine only listens on `127.0.0.1`. It rejects requests with a foreign `Host` header (DNS rebinding) and any write without the `X-FlowForge` header, so websites you visit can't create or trigger combos.
 - Moves, copies and renames never overwrite: `report.pdf` becomes `report (1).pdf`.
 - Files FlowForge writes into a watched folder don't re-trigger that folder's combos, so there are no infinite loops.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md). Current version: **1.0.0**.
 
 ## License
 

@@ -1,6 +1,6 @@
 {
   "name": "flowforge",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "A deckbuilder where your cards are real PC automations. Snap triggers, conditions and actions into combos, level them up by running them.",
   "type": "module",
   "main": "src/server.js",
