@@ -1,6 +1,7 @@
 // FlowForge UI: collection, forge (combo builder), combos, log and toasts.
 
 import { art } from './art.js';
+import { encodeCombo, decodeCombo } from './share.js';
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -388,7 +389,8 @@ function comboHtml(c) {
       <div class="combo-actions">
         <button class="ghost small play" data-play>▶ Play</button>
         <button class="ghost small" data-edit>✎ Edit</button>
-        <button class="ghost small" data-delete>🗑</button>
+        <button class="ghost small" data-share title="Copy a share code for this combo">📤 Share</button>
+        <button class="ghost small" data-delete title="Scrap combo">🗑</button>
       </div>
     </div>`;
 }
@@ -440,6 +442,8 @@ $('#combo-list').addEventListener('click', async (e) => {
       }
     } else if (e.target.closest('[data-edit]')) {
       loadIntoForge(combo, id);
+    } else if (e.target.closest('[data-share]')) {
+      await shareCombo(combo);
     } else if (e.target.closest('[data-delete]')) {
       if (confirm(`Scrap "${combo.name}"? Its level and stats will be lost.`)) {
         await api('DELETE', `/api/combos/${id}`);
@@ -461,6 +465,30 @@ $('#combo-list').addEventListener('change', async (e) => {
     await api('POST', `/api/combos/${id}/enabled`, { enabled: e.target.checked });
   } catch (err) {
     toast('Could not toggle', err.message, 'error');
+  }
+});
+
+// ---------- sharing ----------
+async function shareCombo(combo) {
+  const { code, stripped } = encodeCombo(combo, state.cards);
+  const note = stripped ? ' Secret settings (like webhook URLs) were left out.' : '';
+  try {
+    await navigator.clipboard.writeText(code);
+    toast('📤 Share code copied', `Send it to a friend; they paste it with "Import code".${note}`, 'ok');
+  } catch {
+    prompt(`Copy this share code.${note}`, code);
+  }
+}
+
+$('#import-combo').addEventListener('click', () => {
+  const code = prompt('Paste a FlowForge share code:');
+  if (!code) return;
+  try {
+    const combo = decodeCombo(code, state.cards);
+    loadIntoForge(combo);
+    toast(`📥 "${combo.name}" imported`, 'Check its folders and settings, then press Forge.', 'ok');
+  } catch (err) {
+    toast('Could not import', err.message, 'error');
   }
 });
 

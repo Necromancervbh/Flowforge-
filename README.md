@@ -43,6 +43,8 @@ Options: `PORT=4778 npm start` uses another port, `FLOWFORGE_DATA=/some/dir` sav
 
 New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screenshot Stash, Stretch Break, Link Collector) to load a ready-made combo into the forge. Recipes that use cards you haven't unlocked yet show 🔒 and the level they need.
 
+**Share combos with friends:** press **📤 Share** on a combo to copy a code like `FF1-eyJu…`, and your friend pastes it with **📥 Import code**. Secret settings such as Discord webhook URLs are left out of the code.
+
 ## Cards
 
 | | Card | Rarity | Unlocks | What it does |
@@ -116,7 +118,7 @@ src/game.js      levels and achievements
 src/platform.js  notifications / open / shell per OS
 src/store.js     atomic JSON save file
 src/server.js    localhost API + static UI
-public/          the card-game UI (vanilla JS); card art in public/art.js
+public/          the card-game UI (vanilla JS); card art in public/art.js, share codes in public/share.js
 ```
 
 Adding a card is one object in `src/cards.js`, plus its illustration in `public/art.js`.
