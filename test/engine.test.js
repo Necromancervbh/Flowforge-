@@ -229,6 +229,36 @@ test('progress survives a restart', async () => {
   assert.equal(reloaded.store.profile.xp, engine.store.profile.xp);
 });
 
+test('daily streaks grow on consecutive days, reset after a gap and unlock achievements', async () => {
+  let now = new Date(2026, 8, 28, 10, 0);
+  engine.stop();
+  engine = makeEngine(() => now);
+  const combo = engine.saveCombo({ name: 'Daily', trigger: { card: 'manual' }, actions: [{ card: 'notify' }] });
+  const runOn = async (y, m, d, h = 10) => {
+    now = new Date(y, m, d, h);
+    await engine.fire(combo.id, {}, 'manual');
+  };
+  const streak = () => engine.store.profile.stats.streak;
+
+  await runOn(2026, 8, 28);
+  await runOn(2026, 8, 28, 22); // same day: no change
+  assert.equal(streak().current, 1);
+  await runOn(2026, 8, 29);
+  await runOn(2026, 8, 30);
+  await runOn(2026, 9, 1); // across a month boundary
+  assert.equal(streak().current, 4);
+  assert.ok(engine.store.profile.achievements.includes('streak-3'));
+
+  now = new Date(2026, 9, 2, 9);
+  assert.equal(engine.snapshot().player.streak, 4, 'still alive the next day');
+  now = new Date(2026, 9, 3, 9);
+  assert.equal(engine.snapshot().player.streak, 0, 'broken after a missed day');
+
+  await runOn(2026, 9, 3);
+  assert.equal(streak().current, 1);
+  assert.equal(streak().best, 4);
+});
+
 test('reaching a new level unlocks cards and announces them', async () => {
   engine.store.profile.xp = 95;
   const toasts = [];

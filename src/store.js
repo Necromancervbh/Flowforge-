@@ -20,6 +20,7 @@ export class Store {
       const saved = JSON.parse(fs.readFileSync(this.file, 'utf8'));
       const profile = { ...fresh.profile, ...saved.profile };
       profile.stats = { ...fresh.profile.stats, ...saved.profile?.stats };
+      profile.stats.streak = { ...fresh.profile.stats.streak, ...profile.stats.streak };
       return { ...fresh, ...saved, profile };
     } catch (err) {
       const backup = `${this.file}.broken-${Date.now()}`;

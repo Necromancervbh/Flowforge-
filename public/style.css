@@ -120,6 +120,7 @@ h3 { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: 
   font-size: 13px;
 }
 .stat-btn:hover { border-color: var(--ember); }
+.stat.cold { filter: grayscale(1); opacity: 0.6; }
 
 /* ---------- board ---------- */
 .board {

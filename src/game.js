@@ -42,6 +42,10 @@ export const ACHIEVEMENTS = [
     test: ({ stats }) => stats.secondsSaved >= 3600 },
   { id: 'night-owl', emoji: '🦉', name: 'Night Owl', text: 'Have a combo run between midnight and 5 AM.', xp: 25,
     test: ({ stats }) => stats.nightRuns >= 1 },
+  { id: 'streak-3', emoji: '🔥', name: 'Warming Up', text: 'Have combos run 3 days in a row.', xp: 50,
+    test: ({ stats }) => stats.streak.best >= 3 },
+  { id: 'streak-7', emoji: '🌋', name: 'On Fire', text: 'Have combos run 7 days in a row.', xp: 150,
+    test: ({ stats }) => stats.streak.best >= 7 },
   { id: 'runs-100', emoji: '♾️', name: 'Perpetual Motion', text: '100 successful runs.', xp: 200,
     test: ({ stats }) => stats.runs >= 100 },
 ];
@@ -50,8 +54,29 @@ export function newProfile() {
   return {
     xp: 0,
     achievements: [],
-    stats: { runs: 0, failures: 0, secondsSaved: 0, nightRuns: 0, actions: {} },
+    stats: { runs: 0, failures: 0, secondsSaved: 0, nightRuns: 0, actions: {}, streak: { current: 0, best: 0, lastDay: null } },
   };
+}
+
+const pad = (n) => String(n).padStart(2, '0');
+const dayKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const yesterdayKey = (now) => dayKey(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1));
+
+// Daily streak: consecutive local days with at least one successful run.
+export function recordStreakDay(stats, now) {
+  const streak = stats.streak;
+  const today = dayKey(now);
+  if (streak.lastDay === today) return;
+  streak.current = streak.lastDay === yesterdayKey(now) ? streak.current + 1 : 1;
+  streak.best = Math.max(streak.best, streak.current);
+  streak.lastDay = today;
+}
+
+// The streak as shown today: it survives until the end of the day after the
+// last run, then drops to 0.
+export function liveStreak(stats, now) {
+  const { current, lastDay } = stats.streak;
+  return lastDay === dayKey(now) || lastDay === yesterdayKey(now) ? current : 0;
 }
 
 // Unlocks any newly earned achievements (repeatedly, since achievement XP
