@@ -17,6 +17,7 @@ const MAX_ACTIVITY = 150;
 const MAX_CONDITIONS = 5;
 const MAX_ACTIONS = 6;
 const WRITTEN_TTL = 15000;
+const HISTORY_LENGTH = 5;
 
 export class Engine extends EventEmitter {
   constructor({ store, platform = realPlatform, now = () => new Date() }) {
@@ -139,6 +140,8 @@ export class Engine extends EventEmitter {
         const card = CARD_BY_ID.get(slot.card);
         if (!card.check(this.renderParams(card, slot.params, ctx), ctx)) {
           this.log('skip', `${combo.name}: ${card.emoji} ${card.name} held it back.`, combo.id);
+          this.recordHistory(combo, 'skip', `${card.emoji} ${card.name} held it back`);
+          this.changed();
           return { status: 'skipped', by: card.id };
         }
       }
@@ -155,6 +158,7 @@ export class Engine extends EventEmitter {
         }
         seconds += card.saves || 0;
       }
+      this.recordHistory(combo, 'ok', summaries.join(' · '));
       this.reward(combo, seconds);
       const gain = XP_PER_RUN + XP_PER_ACTION * combo.actions.length;
       this.log('ok', `${combo.name}: ${summaries.join(' · ')} (+${gain} XP)`, combo.id);
@@ -166,9 +170,16 @@ export class Engine extends EventEmitter {
       this.store.profile.stats.failures += 1;
       const where = err.card ? `${err.card.emoji} ${err.card.name} failed: ` : '';
       this.log('error', `${combo.name}: ${where}${err.message}`, combo.id);
+      this.recordHistory(combo, 'error', `${where}${err.message}`);
       this.changed();
       return { status: 'error', error: err.message };
     }
+  }
+
+  // Last few outcomes per combo, newest first, shown under the combo.
+  recordHistory(combo, status, text) {
+    combo.history = [{ at: this.now().toISOString(), status, text: String(text).slice(0, 300) }, ...(combo.history || [])]
+      .slice(0, HISTORY_LENGTH);
   }
 
   reward(combo, seconds) {

@@ -74,6 +74,31 @@ test('a manual combo runs its actions, fills placeholders and earns XP', async (
   assert.deepEqual(engine.store.profile.achievements.sort(), ['first-forge', 'first-run']);
 });
 
+test('each combo keeps its last 5 outcomes, newest first', async () => {
+  const combo = engine.saveCombo({
+    name: 'Picky',
+    trigger: { card: 'manual' },
+    conditions: [{ card: 'text-contains', params: { text: '{{file.name}}', word: 'yes', mode: 'contains' } }],
+    actions: [{ card: 'move-file', params: { destination: path.join(dir, 'out') } }],
+  });
+  await engine.fire(combo.id, {}, 'manual'); // held back: no file name
+  await engine.fire(combo.id, { file: { name: 'yes.txt', path: path.join(dir, 'missing', 'yes.txt') } }, 'manual'); // error
+  for (let i = 0; i < 5; i++) {
+    const file = path.join(dir, `yes-${i}.txt`);
+    fs.writeFileSync(file, 'x');
+    await engine.fire(combo.id, { file: { name: `yes-${i}.txt`, path: file } }, 'manual');
+  }
+  assert.equal(combo.history.length, 5);
+  assert.deepEqual(combo.history.map((h) => h.status), ['ok', 'ok', 'ok', 'ok', 'ok']);
+  assert.match(combo.history[0].text, /Moved yes-4\.txt/);
+
+  const fresh = engine.saveCombo({ name: 'Fresh', trigger: { card: 'manual' }, conditions: combo.conditions, actions: combo.actions });
+  await engine.fire(fresh.id, {}, 'manual');
+  await engine.fire(fresh.id, { file: { name: 'yes.txt', path: path.join(dir, 'missing', 'yes.txt') } }, 'manual');
+  assert.deepEqual(fresh.history.map((h) => h.status), ['error', 'skip']);
+  assert.match(fresh.history[0].text, /Sorting Hat failed/);
+});
+
 test('conditions can hold a combo back', async () => {
   const combo = engine.saveCombo({
     name: 'Filtered',

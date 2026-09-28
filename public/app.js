@@ -413,6 +413,7 @@ function comboHtml(c) {
       <div class="bar"><div class="bar-fill" style="width:${Math.round(c.level.progress * 100)}%"></div></div>
       <div class="combo-meta">${c.runs} runs · saved ${formatDuration(c.secondsSaved)} · last run ${timeAgo(c.lastRun)}</div>
       ${error ? `<div class="combo-error">⚠ ${esc(error)}</div>` : ''}
+      ${historyHtml(c)}
       <div class="combo-actions">
         <button class="ghost small play" data-play>▶ Play</button>
         <button class="ghost small" data-edit>✎ Edit</button>
@@ -441,6 +442,32 @@ $('#toggle-all').addEventListener('click', async (e) => {
     toast('Could not change combos', err.message, 'error');
   }
 });
+
+const HISTORY_ICON = { ok: '✔', skip: '⏸', error: '✖' };
+
+function historyHtml(combo) {
+  const history = combo.history || [];
+  if (!history.length) return '';
+  const open = openHistories.has(combo.id) ? 'open' : '';
+  return `
+    <details class="history" data-history="${combo.id}" ${open}>
+      <summary>Last ${history.length} run${history.length === 1 ? '' : 's'}</summary>
+      <ol>${history.map((h) => `
+        <li class="${h.status}"><span>${HISTORY_ICON[h.status] ?? '•'}</span>
+          <time title="${esc(new Date(h.at).toLocaleString())}">${timeAgo(h.at)}</time>
+          <span class="history-text">${esc(h.text)}</span></li>`).join('')}
+      </ol>
+    </details>`;
+}
+
+// Keep open history panels open across re-renders.
+const openHistories = new Set();
+$('#combo-list').addEventListener('toggle', (e) => {
+  const id = e.target.dataset?.history;
+  if (!id) return;
+  if (e.target.open) openHistories.add(id);
+  else openHistories.delete(id);
+}, true);
 
 function renderCombos() {
   renderToggleAll();
