@@ -98,6 +98,14 @@ const ART = {
     <rect x="42" y="30" width="9" height="8" rx="1.5" fill="#4cc38a"/>
     <path fill="none" stroke="#fff" stroke-width="2" d="M44 34L46 36L49.5 32"/>`,
 
+  'file-type': `
+    <path fill="#fff4e6" d="M12 6H36L48 18V58H12Z"/>
+    <path fill="#e0c9a6" d="M36 6V18H48"/>
+    <rect x="6" y="30" width="36" height="16" rx="3" fill="#ef5b5b"/>
+    <path fill="none" stroke="#fff4e6" stroke-width="2.5" d="M12 42V34H16A2.5 2.5 0 0 1 16 39H12M22 34V42H24A4 4 0 0 0 24 34ZM34 42V34H38.5M34 38H37.5"/>
+    <circle cx="52" cy="48" r="9" fill="#4cc38a"/>
+    <path fill="none" stroke="#fff" stroke-width="2.5" d="M47.5 48L50.5 51L56 45"/>`,
+
   'file-size': `
     <path stroke="#8a5530" stroke-width="4" d="M32 14V52M21 55H43"/>
     <path stroke="#b0b8c4" stroke-width="3.5" d="M9 18L55 24"/>
