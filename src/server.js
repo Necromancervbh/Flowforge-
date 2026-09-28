@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseArgs } from 'node:util';
 import { Store } from './store.js';
 import { Engine } from './engine.js';
 import { openTarget, expandHome } from './platform.js';
@@ -140,9 +141,57 @@ export function createServer(engine, { port }) {
   });
 }
 
+const USAGE = `Usage: flowforge [options]
+
+  -p, --port <n>     Port to listen on (default 4777, or $PORT)
+  -d, --data <dir>   Where to keep your save (default ~/.flowforge, or $FLOWFORGE_DATA)
+      --no-open      Don't open the browser on start
+  -v, --version      Print the version
+  -h, --help         Show this help`;
+
+// Command-line options win over environment variables.
+export function parseCli(argv, env = process.env) {
+  const { values } = parseArgs({
+    args: argv,
+    options: {
+      port: { type: 'string', short: 'p' },
+      data: { type: 'string', short: 'd' },
+      'no-open': { type: 'boolean' },
+      version: { type: 'boolean', short: 'v' },
+      help: { type: 'boolean', short: 'h' },
+    },
+    strict: true,
+  });
+  const rawPort = values.port ?? env.PORT ?? '4777';
+  const port = Number(rawPort);
+  if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error(`"${rawPort}" is not a valid port (1-65535)`);
+  return {
+    port,
+    dataDir: path.resolve(expandHome(values.data ?? env.FLOWFORGE_DATA ?? path.join(os.homedir(), '.flowforge'))),
+    open: !values['no-open'],
+    help: Boolean(values.help),
+    version: Boolean(values.version),
+  };
+}
+
 async function main() {
-  const port = Number(process.env.PORT) || 4777;
-  const dataDir = process.env.FLOWFORGE_DATA || path.join(os.homedir(), '.flowforge');
+  let options;
+  try {
+    options = parseCli(process.argv.slice(2));
+  } catch (err) {
+    console.error(`${err.message}\n\n${USAGE}`);
+    process.exit(1);
+  }
+  if (options.help) {
+    console.log(USAGE);
+    return;
+  }
+  if (options.version) {
+    const pkg = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+    console.log(pkg.version);
+    return;
+  }
+  const { port, dataDir } = options;
   const store = new Store(dataDir);
   const engine = new Engine({ store });
   engine.on('event', (e) => {
@@ -152,7 +201,7 @@ async function main() {
   const server = createServer(engine, { port });
   server.on('error', (err) => {
     if (err.code === 'EADDRINUSE') {
-      console.error(`Port ${port} is busy. Is FlowForge already running? Try PORT=4778 npm start`);
+      console.error(`Port ${port} is busy. Is FlowForge already running? Try: npm start -- --port 4778`);
       process.exit(1);
     }
     throw err;
@@ -161,7 +210,7 @@ async function main() {
     const url = `http://localhost:${port}`;
     console.log(`⚒️  FlowForge is running at ${url}  (saves in ${dataDir})`);
     engine.start();
-    if (!process.argv.includes('--no-open')) openTarget(url).catch(() => {});
+    if (options.open) openTarget(url).catch(() => {});
   });
 
   const shutdown = () => {
