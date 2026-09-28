@@ -226,6 +226,27 @@ test('Copycat fires for newly copied text, not what was already on the clipboard
   assert.equal(fs.readFileSync(logFile, 'utf8'), 'https://example.com/cool\n');
 });
 
+test('Echo copies text, and Copycat ignores what Echo wrote (no loop)', async () => {
+  let clipboard = 'already there';
+  fakePlatform.readClipboard = async () => clipboard;
+  fakePlatform.writeClipboard = async (text) => { clipboard = text; };
+  engine.store.profile.xp = 100;
+  const combo = engine.saveCombo({
+    name: 'Shout',
+    trigger: { card: 'clipboard' },
+    actions: [{ card: 'copy-text', params: { text: 'You copied: {{clip.text}}' } }],
+  });
+  const { CLIPBOARD_POLL_MS } = await import('../src/cards.js');
+  await new Promise((r) => setTimeout(r, 100));
+  clipboard = 'hello';
+  await new Promise((r) => setTimeout(r, CLIPBOARD_POLL_MS * 4.5));
+  delete fakePlatform.readClipboard;
+  delete fakePlatform.writeClipboard;
+
+  assert.equal(clipboard, 'You copied: hello');
+  assert.equal(combo.runs, 1, 'Echo output must not re-trigger Copycat');
+});
+
 test('Copycat shows a clipboard problem on its combo, then clears it once fixed', async () => {
   let broken = true;
   fakePlatform.readClipboard = async () => {

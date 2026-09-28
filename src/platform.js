@@ -2,7 +2,7 @@
 // running shell commands. User text is always passed as arguments or
 // environment variables, never spliced into a shell string.
 
-import { execFile, exec } from 'node:child_process';
+import { execFile, exec, spawn } from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -94,6 +94,58 @@ export async function readClipboard() {
     } catch (err) {
       lastError = err.code === 'ENOENT'
         ? new Error('Install wl-clipboard or xclip so FlowForge can read the clipboard')
+        : err;
+    }
+  }
+  throw lastError;
+}
+
+// Clipboard writers per OS; text goes in on stdin (or an env var on Windows).
+const CLIPBOARD_WRITERS = {
+  darwin: [['pbcopy', []]],
+  win32: [['powershell.exe', ['-NoProfile', '-Command', 'Set-Clipboard -Value $env:FF_TEXT']]],
+  linux: [
+    ['wl-copy', []],
+    ['xclip', ['-selection', 'clipboard', '-i']],
+    ['xsel', ['--clipboard', '--input']],
+  ],
+};
+let clipboardWriter = null;
+
+function pipeTo(file, args, text) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(file, args, { windowsHide: true, env: { ...process.env, FF_TEXT: text }, stdio: ['pipe', 'ignore', 'pipe'] });
+    let stderr = '';
+    const timer = setTimeout(() => child.kill(), 5000);
+    child.stderr.on('data', (d) => (stderr += d));
+    child.on('error', (err) => {
+      clearTimeout(timer);
+      reject(err);
+    });
+    // wl-copy, xclip and xsel fork a background process that keeps serving
+    // the clipboard, so the command itself exits right away.
+    child.on('exit', (code) => {
+      clearTimeout(timer);
+      if (code === 0 || code === null) resolve();
+      else reject(new Error(stderr.trim() || `${file} exited with ${code}`));
+    });
+    child.stdin.on('error', () => {});
+    child.stdin.end(platform === 'win32' ? '' : text);
+  });
+}
+
+// Puts text on the clipboard. Throws if no clipboard tool is installed.
+export async function writeClipboard(text) {
+  if (clipboardWriter) return pipeTo(...clipboardWriter, text);
+  let lastError = new Error('No clipboard support on this system');
+  for (const writer of CLIPBOARD_WRITERS[platform] || CLIPBOARD_WRITERS.linux) {
+    try {
+      await pipeTo(...writer, text);
+      clipboardWriter = writer;
+      return;
+    } catch (err) {
+      lastError = err.code === 'ENOENT'
+        ? new Error('Install wl-clipboard or xclip so FlowForge can use the clipboard')
         : err;
     }
   }
