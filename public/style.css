@@ -389,6 +389,14 @@ h3 { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: 
 .combo .bar { height: 5px; }
 .combo-meta { font-size: 11px; color: var(--muted); margin-top: 6px; }
 .combo-error { font-size: 11px; color: var(--danger); margin-top: 6px; }
+.history { font-size: 11px; color: var(--muted); margin-top: 6px; }
+.history summary { cursor: pointer; }
+.history ol { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; }
+.history li { display: flex; gap: 6px; align-items: baseline; }
+.history time { flex: none; font-family: ui-monospace, monospace; }
+.history-text { overflow-wrap: anywhere; color: var(--text); }
+.history .ok > span:first-child { color: var(--action); }
+.history .error > span:first-child, .history .error .history-text { color: var(--danger); }
 .combo-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .combo-actions button { flex: 1 1 auto; white-space: nowrap; }
 .combo-actions .play { border-color: var(--action); color: var(--action); font-weight: 700; }

@@ -54,6 +54,8 @@ New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screens
 
 **Find cards fast:** press `/` to search the collection by name, description, rarity or type (`then rare` shows rare action cards). `Esc` clears the search.
 
+**What did it do?** Each combo shows its **last 5 runs** (done, held back or failed) with the time and what happened.
+
 **Light or dark:** the ☀️ / 🌙 button in the header switches themes, and FlowForge remembers your choice.
 
 **Keep a record:** **💾 Save log** downloads the Battle Log as a text file (oldest entry first).
