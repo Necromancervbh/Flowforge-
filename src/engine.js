@@ -10,7 +10,7 @@ import { CARD_BY_ID, CARDS, publicCard } from './cards.js';
 import { render, baseContext } from './template.js';
 import {
   XP_PER_RUN, XP_PER_ACTION, levelInfo, levelFromXp, comboLevelInfo,
-  checkAchievements, ACHIEVEMENTS, publicAchievement,
+  checkAchievements, ACHIEVEMENTS, publicAchievement, recordStreakDay, liveStreak,
 } from './game.js';
 
 const MAX_ACTIVITY = 150;
@@ -182,6 +182,7 @@ export class Engine extends EventEmitter {
     profile.stats.runs += 1;
     profile.stats.secondsSaved += seconds;
     if (now.getHours() < 5) profile.stats.nightRuns += 1;
+    recordStreakDay(profile.stats, now);
     for (const slot of combo.actions) {
       profile.stats.actions[slot.card] = (profile.stats.actions[slot.card] || 0) + 1;
     }
@@ -310,7 +311,7 @@ export class Engine extends EventEmitter {
     const { profile } = this.store;
     const player = levelInfo(profile.xp);
     return {
-      player: { ...player, stats: profile.stats },
+      player: { ...player, stats: profile.stats, streak: liveStreak(profile.stats, this.now()) },
       cards: CARDS.map((c) => publicCard(c, player.level)),
       combos: this.store.combos.map((c) => ({
         ...c,

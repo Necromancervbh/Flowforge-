@@ -125,6 +125,9 @@ function renderPlayer(previousLevel) {
   $('#next-unlock').textContent = nextCards.length ? `Lv ${p.level + 1}: ${nextCards.map((c) => c.emoji).join(' ')}` : '';
   $('#stat-saved').textContent = formatDuration(p.stats.secondsSaved);
   $('#stat-runs').textContent = p.stats.runs;
+  $('#stat-streak').textContent = p.streak;
+  $('#stat-streak-wrap').title = `Daily streak: ${p.streak} day${p.streak === 1 ? '' : 's'} in a row (best ${p.stats.streak.best})`;
+  $('#stat-streak-wrap').classList.toggle('cold', p.streak === 0);
   const unlocked = state.achievements.filter((a) => a.unlocked).length;
   $('#stat-ach').textContent = `${unlocked}/${state.achievements.length}`;
 }
