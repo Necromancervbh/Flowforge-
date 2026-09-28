@@ -153,6 +153,14 @@ const ART = {
     ${lines(31, 49, [29, 36, 43, 50])}
     <path fill="none" stroke="#4cc38a" stroke-width="3" d="M9 52Q11 60 20 58M16 54L20 58L16 62"/>`,
 
+  'compress-file': `
+    <rect x="6" y="6" width="52" height="8" rx="3" fill="#8d96a3"/>
+    <rect x="6" y="50" width="52" height="8" rx="3" fill="#8d96a3"/>
+    <path stroke="#b0b8c4" stroke-width="4" d="M12 14V50M52 14V50"/>
+    <path fill="#fff4e6" d="M20 20H44L40 32L44 44H20L24 32Z"/>
+    ${lines(26, 38, [26, 38], '#c9b8a3')}
+    <path fill="none" stroke="#ef5b5b" stroke-width="3" d="M32 17V22M29 19.5L32 22.5L35 19.5M32 47V42M29 44.5L32 41.5L35 44.5"/>`,
+
   'rename-file': `
     <path fill="none" stroke="#8d8378" stroke-width="2" d="M44 18Q54 4 61 9"/>
     <path fill="#ffb347" d="M8 34L32 10H54V32L30 56Z"/>

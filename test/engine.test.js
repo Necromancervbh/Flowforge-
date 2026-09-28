@@ -122,6 +122,29 @@ test('file combos move, rename and log files without overwriting', async () => {
   assert.equal(fs.readFileSync(path.join(dir, 'log.txt'), 'utf8'), `bill (1).pdf in ${path.join(sorted, 'pdf')}\n`);
 });
 
+test('Compactor gzips a file and can delete the original', async () => {
+  const zlib = await import('node:zlib');
+  const { fileInfo } = await import('../src/cards.js');
+  engine.store.profile.xp = 10000;
+  const file = path.join(dir, 'server.log');
+  const text = 'GET /index.html 200\n'.repeat(5000);
+  fs.writeFileSync(file, text);
+  const combo = engine.saveCombo({
+    name: 'Squash',
+    trigger: { card: 'manual' },
+    actions: [
+      { card: 'compress-file', params: { original: 'delete' } },
+      { card: 'write-log', params: { file: path.join(dir, 'out.txt'), line: '{{file.name}}' } },
+    ],
+  });
+  const result = await engine.fire(combo.id, { file: fileInfo(file, fs.statSync(file)) }, 'manual');
+  assert.equal(result.status, 'ok', result.error);
+  assert.match(result.summaries[0], /Compressed server\.log \(98 KB → .* B\)/);
+  assert.equal(fs.existsSync(file), false);
+  assert.equal(zlib.gunzipSync(fs.readFileSync(`${file}.gz`)).toString(), text);
+  assert.equal(fs.readFileSync(path.join(dir, 'out.txt'), 'utf8'), 'server.log.gz\n', 'later cards see the .gz');
+});
+
 test('file actions explain themselves when there is no file', async () => {
   const combo = engine.saveCombo({
     name: 'No file',
@@ -147,7 +170,7 @@ test('shell commands receive file details as env vars, not templated text', asyn
   assert.equal(env.FF_FILE_NAME, '$(rm -rf).txt');
 });
 
-test('the File Appears trigger fires for new files and ignores our own writes', async () => {
+test('the File Appears trigger fires for new files and ignores our own writes', { timeout: 15000 }, async () => {
   const inbox = path.join(dir, 'watch');
   const out = path.join(inbox, 'copies');
   fs.mkdirSync(inbox);
@@ -163,6 +186,8 @@ test('the File Appears trigger fires for new files and ignores our own writes', 
   const done = new Promise((resolve) => {
     engine.on('event', (e) => e.type === 'activity' && e.entry.level === 'ok' && e.entry.comboId === combo.id && resolve());
   });
+  // macOS (FSEvents) can miss files created the instant a watch starts.
+  await new Promise((r) => setTimeout(r, 500));
   fs.writeFileSync(path.join(inbox, 'ignored.jpg'), 'x');
   fs.writeFileSync(path.join(inbox, 'note.txt'), 'hello');
   await done;
