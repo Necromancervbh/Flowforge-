@@ -39,7 +39,14 @@ npm start
 
 Your browser opens at <http://localhost:4777>. Keep the terminal open: that's the engine running your combos. Progress is saved in `~/.flowforge/save.json`.
 
-Options: `PORT=4778 npm start` uses another port, `FLOWFORGE_DATA=/some/dir` saves elsewhere, and `--no-open` skips opening the browser.
+Options (after `npm start --`, e.g. `npm start -- --port 4778`):
+
+| Option | What it does |
+|---|---|
+| `-p, --port <n>` | Use another port (default 4777; also `$PORT`) |
+| `-d, --data <dir>` | Keep the save somewhere else (default `~/.flowforge`; also `$FLOWFORGE_DATA`) |
+| `--no-open` | Don't open the browser on start |
+| `-v, --version` / `-h, --help` | Print the version / the help |
 
 New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screenshot Stash, Stretch Break, Link Collector) to load a ready-made combo into the forge. Recipes that use cards you haven't unlocked yet show 🔒 and the level they need.
 
