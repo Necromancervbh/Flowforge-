@@ -87,6 +87,15 @@ test('conditions can hold a combo back', async () => {
   assert.equal(combo.runs, 0);
 });
 
+test('Type Gate matches file extensions case-insensitively, with or without dots', () => {
+  const check = (mode, types, name) => CARD_BY_ID.get('file-type').check({ mode, types }, { file: { path: `/x/${name}`, ext: name.split('.').pop().toLowerCase() } });
+  assert.equal(check('is one of', 'pdf, .DOCX', 'Report.Docx'), true);
+  assert.equal(check('is one of', 'pdf docx', 'photo.jpg'), false);
+  assert.equal(check('is not one of', 'exe,msi', 'setup.EXE'), false);
+  assert.equal(check('is not one of', 'exe,msi', 'notes.txt'), true);
+  assert.throws(() => CARD_BY_ID.get('file-type').check({ mode: 'is one of', types: 'pdf' }, {}), /needs a file/);
+});
+
 test('time windows work across midnight', () => {
   const check = (h, from, to) => CARD_BY_ID.get('time-window').check({ from, to }, { now: new Date(2026, 0, 1, h) });
   assert.equal(check(23, '22:00', '06:00'), true);

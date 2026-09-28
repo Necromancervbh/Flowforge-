@@ -59,6 +59,7 @@ New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screens
 | | 🔌 Power On | common | Lv 3 | When FlowForge starts |
 | | 🔭 Web Watcher | epic | Lv 4 | A web page's text changes |
 | **IF** | 🔎 Keyword Filter | common | Lv 1 | Text contains / doesn't contain a word |
+| | 🧩 Type Gate | common | Lv 1 | Only certain file types (or everything except them) |
 | | 🕘 Office Hours | common | Lv 2 | Only between two times |
 | | 📅 Calendar Gate | common | Lv 2 | Only weekdays / weekends |
 | | ⚖️ Heavy Load | rare | Lv 3 | File bigger / smaller than N MB |

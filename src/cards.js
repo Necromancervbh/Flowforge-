@@ -348,6 +348,24 @@ const CONDITIONS = [
     },
   },
   {
+    id: 'file-type',
+    name: 'Type Gate',
+    emoji: '🧩',
+    rarity: 'common',
+    unlock: 1,
+    text: 'Continue only if the file type is (or is not) in a list, e.g. pdf, docx.',
+    params: [
+      { key: 'mode', label: 'File type', type: 'select', options: ['is one of', 'is not one of'], default: 'is one of' },
+      { key: 'types', label: 'Types', type: 'text', placeholder: 'pdf, docx, xlsx', required: true },
+    ],
+    check(params, ctx) {
+      requireFile(ctx, 'Type Gate');
+      const types = String(params.types).split(/[\s,]+/).map((t) => t.replace(/^\./, '').toLowerCase()).filter(Boolean);
+      const hit = types.includes(ctx.file.ext);
+      return params.mode === 'is not one of' ? !hit : hit;
+    },
+  },
+  {
     id: 'file-size',
     name: 'Heavy Load',
     emoji: '⚖️',
