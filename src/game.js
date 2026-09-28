@@ -23,7 +23,7 @@ export function levelInfo(xp, base = 100) {
 // Combos level up faster than the player.
 export const comboLevelInfo = (xp) => levelInfo(xp, 40);
 
-const FILE_ACTIONS = ['move-file', 'copy-file', 'rename-file'];
+const FILE_ACTIONS = ['move-file', 'copy-file', 'rename-file', 'compress-file'];
 
 export const ACHIEVEMENTS = [
   { id: 'first-forge', emoji: '⚒️', name: 'First Forge', text: 'Forge your first combo.', xp: 50,
@@ -36,7 +36,7 @@ export const ACHIEVEMENTS = [
     test: ({ stats }) => stats.runs >= 10 },
   { id: 'collector-5', emoji: '🗂️', name: 'Deck Master', text: 'Own 5 combos at once.', xp: 100,
     test: ({ combos }) => combos.length >= 5 },
-  { id: 'sorter-25', emoji: '🧹', name: 'Tidy Wizard', text: 'Move, copy or rename 25 files.', xp: 100,
+  { id: 'sorter-25', emoji: '🧹', name: 'Tidy Wizard', text: 'Move, copy, rename or compress 25 files.', xp: 100,
     test: ({ stats }) => FILE_ACTIONS.reduce((n, id) => n + (stats.actions[id] || 0), 0) >= 25 },
   { id: 'saved-hour', emoji: '⏳', name: 'Hour Hacker', text: 'Save a full hour of manual work.', xp: 150,
     test: ({ stats }) => stats.secondsSaved >= 3600 },

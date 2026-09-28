@@ -67,6 +67,7 @@ New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screens
 | | 📂 Summon | common | Lv 2 | Open a file, folder or app |
 | | 🪞 Mirror Image | rare | Lv 3 | Copy the file to a folder |
 | | 🏷️ True Name | rare | Lv 3 | Rename the file |
+| | 🗜️ Compactor | rare | Lv 3 | Compress the file to `.gz` (keep or delete the original) |
 | | 🐦‍⬛ Raven | epic | Lv 4 | Post to a Discord webhook |
 | | 🪄 Arcane Command | legendary | Lv 5 | Run a shell command |
 

@@ -11,6 +11,8 @@ import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import zlib from 'node:zlib';
+import { pipeline } from 'node:stream/promises';
 import { expandHome, tildify } from './platform.js';
 
 export const CLIPBOARD_POLL_MS = 1500;
@@ -47,6 +49,18 @@ function resolveFolder(folder) {
   const dir = expandHome(String(folder || '').trim());
   if (!dir) throw new Error('No folder chosen');
   return path.resolve(dir);
+}
+
+export function formatBytes(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  const units = ['KB', 'MB', 'GB'];
+  let value = bytes / 1024;
+  let i = 0;
+  while (value >= 1024 && i < units.length - 1) {
+    value /= 1024;
+    i++;
+  }
+  return `${value < 10 ? value.toFixed(1) : Math.round(value)} ${units[i]}`;
 }
 
 // "report.pdf" -> "report (1).pdf" when the name is taken.
@@ -460,6 +474,32 @@ const ACTIONS = [
       helpers.markWritten(dest);
       await fsp.copyFile(src, dest);
       return `Copied ${path.basename(src)} → ${tildify(dir)}`;
+    },
+  },
+  {
+    id: 'compress-file',
+    name: 'Compactor',
+    emoji: '🗜️',
+    rarity: 'rare',
+    unlock: 3,
+    saves: 20,
+    text: 'Squeeze the file into a .gz next to it. Great for big logs and exports.',
+    params: [
+      { key: 'original', label: 'Original file', type: 'select', options: ['keep', 'delete'], default: 'keep' },
+    ],
+    async run(params, ctx, helpers) {
+      const src = requireFile(ctx, 'Compactor');
+      if (src.toLowerCase().endsWith('.gz')) return `${path.basename(src)} is already compressed`;
+      const dest = await uniquePath(`${src}.gz`);
+      helpers.markWritten(dest);
+      await pipeline(fs.createReadStream(src), zlib.createGzip(), fs.createWriteStream(dest));
+      const before = (await fsp.stat(src)).size;
+      const after = (await fsp.stat(dest)).size;
+      if (params.original === 'delete') {
+        await fsp.unlink(src);
+        ctx.file = fileInfo(dest, await fsp.stat(dest));
+      }
+      return `Compressed ${path.basename(src)} (${formatBytes(before)} → ${formatBytes(after)})`;
     },
   },
   {
