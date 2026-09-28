@@ -149,10 +149,36 @@ function cardHtml(card) {
     </div>`;
 }
 
-function renderCollection() {
-  const cards = state.cards.filter((c) => filter === 'all' || c.type === filter);
-  $('#card-grid').innerHTML = cards.map(cardHtml).join('');
+// Matches name, description, rarity or type ("when"/"if"/"then" too).
+function matchesSearch(card, query) {
+  if (!query) return true;
+  const haystack = [card.name, card.text, card.rarity, card.type, TYPE_LABEL[card.type]].join(' ').toLowerCase();
+  return query.toLowerCase().split(/\s+/).every((word) => haystack.includes(word));
 }
+
+function renderCollection() {
+  const query = $('#card-search').value.trim();
+  const cards = state.cards.filter((c) => (filter === 'all' || c.type === filter) && matchesSearch(c, query));
+  $('#card-grid').innerHTML = cards.length
+    ? cards.map(cardHtml).join('')
+    : `<div class="empty">No cards match "${esc(query)}".</div>`;
+}
+
+$('#card-search').addEventListener('input', renderCollection);
+$('#card-search').addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    e.target.value = '';
+    renderCollection();
+    e.target.blur();
+  }
+});
+document.addEventListener('keydown', (e) => {
+  const typing = e.target.closest('input, select, textarea, [contenteditable]');
+  if (e.key === '/' && !typing && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    e.preventDefault();
+    $('#card-search').focus();
+  }
+});
 
 $('#tabs').addEventListener('click', (e) => {
   const btn = e.target.closest('button[data-filter]');
