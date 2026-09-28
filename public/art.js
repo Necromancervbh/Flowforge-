@@ -28,6 +28,15 @@ const ART = {
     <path fill="#d98c4f" d="M9 40H19L23 46H41L45 40H55V56H9Z"/>
     ${star(54, 12, 5)}`,
 
+  'file-changed': `
+    <path fill="#fff4e6" d="M10 6H34L46 18V58H10Z"/>
+    <path fill="#e0c9a6" d="M34 6V18H46"/>
+    ${lines(16, 36, [26, 33, 40], '#c9b8a3')}
+    <path fill="#ffd166" d="M52 20L60 28L36 52L26 55L29 45Z"/>
+    <path fill="#ef5b5b" d="M52 20L56 16L64 24L60 28Z"/>
+    <path fill="#e0c9a6" d="M29 45L26 55L36 52Z"/>
+    <path fill="none" stroke="#ef5b5b" stroke-width="2.5" d="M4 44Q2 52 8 56M4 30Q1 36 3 40"/>`,
+
   interval: `
     <rect x="27" y="5" width="10" height="6" rx="2" fill="#b0b8c4"/>
     <rect x="30" y="10" width="4" height="6" fill="#8d96a3"/>

@@ -75,6 +75,7 @@ New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screens
 | | ⏱️ Ticking Clock | common | Lv 1 | Every N minutes |
 | | 🌅 Daily Ritual | rare | Lv 2 | Once a day at a set time |
 | | 📋 Copycat | rare | Lv 2 | You copy new text (e.g. collect every link you copy) |
+| | ✏️ Tripwire | rare | Lv 3 | A specific file is edited and saved (notes, a game save…) |
 | | 🔌 Power On | common | Lv 3 | When FlowForge starts |
 | | 🔭 Web Watcher | epic | Lv 4 | A web page's text changes |
 | **IF** | 🔎 Keyword Filter | common | Lv 1 | Text contains / doesn't contain a word |
