@@ -33,6 +33,10 @@ Snap cards together into combos: a **WHEN** card (trigger), optional **IF** card
 |---|---|
 | ![FlowForge on a narrow screen](docs/screenshots/mobile.png) | ![Achievements dialog](docs/screenshots/achievements.png) |
 
+| Stats |
+|---|
+| ![Stats dialog: totals, a 14-day runs chart and the busiest combos](docs/screenshots/stats.png) |
+
 Every card has its own hand-drawn SVG illustration (`public/art.js`), so there are no image files to download and the art stays sharp at any size. Epic cards glow and legendary cards shimmer.
 
 ## Run it
@@ -75,6 +79,8 @@ New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screens
 **Find cards fast:** press `/` to search the collection by name, description, rarity or type (`then rare` shows rare action cards). `Esc` clears the search.
 
 **What did it do?** Each combo shows its **last 5 runs** (done, held back or failed) with the time and what happened.
+
+**See your progress:** the 📊 button shows total runs, success rate, time saved, your best streak, a chart of runs over the last 14 days (hover a day for details, or open it as a table) and your busiest combos.
 
 **Sound:** runs go *ka-ching*, achievements chime and level-ups play a fanfare, all synthesized in the browser. The 🔊 / 🔇 button mutes it, and FlowForge remembers.
 

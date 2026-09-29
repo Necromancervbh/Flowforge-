@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- 📊 **Stats dialog**: runs, success rate, time saved, best streak and cards used, a 14-day runs chart (hover for details, or view as a table) and your busiest combos
 - 🔊 **Sound effects**: a coin for each run, a low note for failures, chimes for achievements and quests, a fanfare on level-up; mute with the 🔊 button (remembered)
 - ⛓️ **Chain Reaction** action card (level 4): run another combo by name, passing the same file along; loops like A → B → A are refused, and chains stop at 5 combos
 - 💤 **Away From Keyboard** trigger card (level 3): fires when you've been away N minutes, or when you come back, with `{{idle.awayFor}}`

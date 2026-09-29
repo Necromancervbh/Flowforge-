@@ -11,7 +11,7 @@ import { render, baseContext } from './template.js';
 import {
   XP_PER_RUN, XP_PER_ACTION, levelInfo, levelFromXp, comboLevelInfo,
   checkAchievements, ACHIEVEMENTS, publicAchievement, recordStreakDay, liveStreak,
-  progressQuests, questStatus,
+  progressQuests, questStatus, recordDaily, dailySeries,
 } from './game.js';
 
 const MAX_ACTIVITY = 150;
@@ -171,6 +171,7 @@ export class Engine extends EventEmitter {
       combo.lastError = err.message;
       combo.lastRun = this.now().toISOString();
       this.store.profile.stats.failures += 1;
+      recordDaily(this.store.profile.stats, this.now(), { failures: 1 });
       const where = err.card ? `${err.card.emoji} ${err.card.name} failed: ` : '';
       this.log('error', `${combo.name}: ${where}${err.message}`, combo.id);
       this.recordHistory(combo, 'error', `${where}${err.message}`);
@@ -220,6 +221,7 @@ export class Engine extends EventEmitter {
     profile.stats.secondsSaved += seconds;
     if (now.getHours() < 5) profile.stats.nightRuns += 1;
     recordStreakDay(profile.stats, now);
+    recordDaily(profile.stats, now, { runs: 1, seconds });
     for (const slot of combo.actions) {
       profile.stats.actions[slot.card] = (profile.stats.actions[slot.card] || 0) + 1;
     }
@@ -377,7 +379,10 @@ export class Engine extends EventEmitter {
     const { profile } = this.store;
     const player = levelInfo(profile.xp);
     return {
-      player: { ...player, stats: profile.stats, streak: liveStreak(profile.stats, this.now()) },
+      player: {
+        ...player, stats: profile.stats, streak: liveStreak(profile.stats, this.now()),
+        daily: dailySeries(profile.stats, this.now(), 14),
+      },
       quests: questStatus(profile, this.now()),
       cards: CARDS.map((c) => publicCard(c, player.level)),
       combos: this.store.combos.map((c) => ({
