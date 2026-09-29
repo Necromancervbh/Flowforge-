@@ -469,7 +469,22 @@ $('#combo-list').addEventListener('toggle', (e) => {
   else openHistories.delete(id);
 }, true);
 
+// Quests change at local midnight (the engine runs on this same computer).
+function untilMidnight(now = new Date()) {
+  const minutes = Math.ceil((new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1) - now) / 60000);
+  return minutes >= 60 ? `${Math.floor(minutes / 60)}h ${minutes % 60}m` : `${minutes}m`;
+}
+
+let questDay = new Date().toDateString();
+
 function renderQuests() {
+  const today = new Date().toDateString();
+  if (today !== questDay) {
+    // A new day: fetch the new set of quests from the engine.
+    questDay = today;
+    refresh().catch(() => {});
+  }
+  $('#quest-reset').textContent = `· new in ${untilMidnight()}`;
   const quests = state.quests || [];
   const done = quests.filter((q) => q.done).length;
   $('#quest-list').innerHTML = quests.map((q) => `

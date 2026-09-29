@@ -422,6 +422,7 @@ h3 { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: 
 .quest.done { border-color: var(--action); }
 .quest.done .quest-text { color: var(--muted); text-decoration: line-through; }
 .quest.done .bar-fill { background: var(--action); }
+.quest-reset { font-weight: 400; letter-spacing: 0; text-transform: none; font-size: 12px; }
 .quest-all { font-size: 12px; color: var(--action); text-align: center; padding: 4px; }
 
 .recipe {
