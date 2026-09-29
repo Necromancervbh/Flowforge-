@@ -477,6 +477,36 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
 .ach.locked { opacity: 0.45; filter: grayscale(1); }
 .ach.unlocked { border-color: var(--ember); box-shadow: 0 0 12px rgba(255, 138, 61, 0.2); }
 
+/* ---------- card packs ---------- */
+.pack-dialog { width: min(640px, calc(100vw - 32px)); }
+.pack-box {
+  display: grid; place-items: center; gap: 8px; margin: 8px auto 4px;
+  width: 190px; height: 260px; border-radius: 14px; cursor: pointer; color: #fff4e6;
+  border: 2px solid var(--ember-2);
+  background:
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0 8px, transparent 8px 16px),
+    linear-gradient(160deg, #ff8a3d, #b3441a 60%, #6e2a12);
+  box-shadow: 0 10px 30px rgba(255, 138, 61, 0.35), inset 0 0 0 4px rgba(0, 0, 0, 0.15);
+  animation: pack-wiggle 1.6s ease-in-out infinite;
+  font: inherit;
+}
+.pack-box:hover, .pack-box:focus-visible { transform: scale(1.03); animation-play-state: paused; }
+.pack-brand { font-weight: 800; font-size: 18px; letter-spacing: 0.04em; text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35); }
+.pack-count { font-size: 30px; font-weight: 800; text-align: center; line-height: 1.1; padding: 0 12px; }
+.pack-hint { font-size: 12px; opacity: 0.85; }
+.pack-box.tearing { animation: pack-tear 0.45s ease-in forwards; }
+.pack-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 160px)); justify-content: center; gap: 12px; margin-top: 6px; }
+.pack-slot { animation: card-flip 0.55s cubic-bezier(0.2, 0.8, 0.3, 1.2) both; animation-delay: calc(var(--i) * 160ms); }
+.pack-slot .card { cursor: pointer; }
+.pack-box[hidden], .pack-cards[hidden] { display: none; }
+.pack-tip { text-align: center; color: var(--muted); font-size: 13px; margin: 12px 0 0; }
+@keyframes pack-wiggle { 0%, 100% { transform: rotate(-1.5deg); } 50% { transform: rotate(1.5deg) translateY(-3px); } }
+@keyframes pack-tear { 40% { transform: scale(1.08) rotate(3deg); } 100% { transform: scale(0.6) rotate(-8deg); opacity: 0; } }
+@keyframes card-flip { from { opacity: 0; transform: perspective(600px) rotateY(90deg) translateY(20px); } }
+@media (prefers-reduced-motion: reduce) {
+  .pack-box, .pack-box.tearing, .pack-slot { animation: none; }
+}
+
 /* ---------- stats ---------- */
 .stat-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: 8px; }
 .stat-tile { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: var(--bg-2); display: grid; gap: 2px; }

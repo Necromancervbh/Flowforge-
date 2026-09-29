@@ -126,6 +126,20 @@
     <ol class="top-combos" id="top-combos"></ol>
   </dialog>
 
+  <dialog id="pack" class="pack-dialog">
+    <div class="dialog-head">
+      <h2 id="pack-title">📦 Card pack</h2>
+      <button class="ghost small" id="close-pack">Add to collection</button>
+    </div>
+    <button class="pack-box" id="pack-box" aria-label="Open the card pack">
+      <span class="pack-brand">⚒️ FlowForge</span>
+      <span class="pack-count" id="pack-count"></span>
+      <span class="pack-hint">Click to open</span>
+    </button>
+    <div class="pack-cards" id="pack-cards" hidden></div>
+    <p class="pack-tip" id="pack-tip" hidden>Click a card to try it in the forge.</p>
+  </dialog>
+
   <div class="toasts" id="toasts"></div>
   <script src="app.js" type="module"></script>
 </body>

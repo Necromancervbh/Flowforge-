@@ -151,7 +151,7 @@ The **Arcane Command** card is the exception: it gets these as environment varia
 ## Progression
 
 - Each successful run gives **10 XP + 5 XP per action**, and adds the manual time each action saves to your ⏳ counter.
-- The player levels up at 100 / 400 / 900 / 1600 XP, and each level unlocks new cards.
+- The player levels up at 100 / 400 / 900 / 1600 XP, and each level hands you a 📦 **card pack**: click to tear it open and the new cards flip in (click one to drop it straight into the forge).
 - Combos level up separately (★) the more they run.
 - There are 13 achievements, from *First Forge* to *Perpetual Motion*, each with bonus XP (including 🃏 *Card Collector* and 👑 *Grand Collector* for using 10 and 20 different cards).
 - A 🔥 daily streak counts the days in a row your combos have run (*Warming Up* at 3 days, *On Fire* at 7).

@@ -128,6 +128,7 @@ function renderPlayer(previousLevel) {
     badge.classList.remove('pop');
     void badge.offsetWidth;
     badge.classList.add('pop');
+    openPack(previousLevel, p.level);
   }
   $('#xp-text').textContent = `${p.xp} / ${p.next} XP`;
   $('#xp-fill').style.width = `${Math.round(p.progress * 100)}%`;
@@ -677,6 +678,41 @@ function renderAchievements() {
 
 $('#open-achievements').addEventListener('click', () => $('#achievements').showModal());
 $('#close-achievements').addEventListener('click', () => $('#achievements').close());
+
+// ---------- card packs ----------
+// Levelling up hands you a pack with the cards that level unlocks.
+function openPack(fromLevel, toLevel) {
+  const cards = state.cards.filter((c) => c.unlock > fromLevel && c.unlock <= toLevel);
+  if (!cards.length) return;
+  $('#pack-title').textContent = `📦 Level ${toLevel} card pack`;
+  $('#pack-count').textContent = `${cards.length} new card${cards.length === 1 ? '' : 's'}`;
+  $('#pack-cards').innerHTML = cards.map((c, i) => `<div class="pack-slot" style="--i:${i}">${cardHtml(c)}</div>`).join('');
+  $('#pack-box').hidden = false;
+  $('#pack-box').classList.remove('tearing');
+  $('#pack-cards').hidden = true;
+  $('#pack-tip').hidden = true;
+  if (!$('#pack').open) $('#pack').showModal();
+  $('#pack-box').focus();
+}
+
+$('#pack-box').addEventListener('click', () => {
+  const box = $('#pack-box');
+  if (box.classList.contains('tearing')) return;
+  box.classList.add('tearing');
+  play('achievement');
+  setTimeout(() => {
+    box.hidden = true;
+    $('#pack-cards').hidden = false;
+    $('#pack-tip').hidden = false;
+  }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 450);
+});
+$('#pack-cards').addEventListener('click', (e) => {
+  const el = e.target.closest('.card');
+  if (!el) return;
+  $('#pack').close();
+  addCardToForge(el.dataset.card);
+});
+$('#close-pack').addEventListener('click', () => $('#pack').close());
 
 // ---------- stats ----------
 const DAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
