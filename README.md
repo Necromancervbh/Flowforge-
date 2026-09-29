@@ -167,7 +167,7 @@ The **Arcane Command** card is the exception: it gets these as environment varia
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md). Current version: **1.1.0**.
+See [CHANGELOG.md](CHANGELOG.md). Current version: **1.2.0**.
 
 ## License
 
