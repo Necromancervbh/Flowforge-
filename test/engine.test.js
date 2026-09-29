@@ -304,6 +304,29 @@ test('Chain Reaction runs another combo with the same file, and refuses loops', 
   assert.equal(paused.summaries[1], 'Second is paused, skipped it');
 });
 
+test('runs and failures are counted per day for the stats chart', async () => {
+  const { dailySeries, recordDaily, DAILY_DAYS_KEPT } = await import('../src/game.js');
+  const ok = engine.saveCombo({ name: 'Ok', trigger: { card: 'manual' }, actions: [{ card: 'notify' }] });
+  const bad = engine.saveCombo({
+    name: 'Bad', trigger: { card: 'manual' },
+    actions: [{ card: 'move-file', params: { destination: path.join(dir, 'x') } }],
+  });
+  await engine.fire(ok.id, {}, 'manual');
+  await engine.fire(ok.id, {}, 'manual');
+  await engine.fire(bad.id, {}, 'manual');
+  const series = engine.snapshot().player.daily;
+  assert.equal(series.length, 14);
+  assert.deepEqual(series.at(-1), { day: '2026-09-26', weekday: 6, runs: 2, failures: 1, seconds: 10 });
+  assert.equal(series[0].day, '2026-09-13');
+  assert.equal(series[0].runs, 0);
+
+  const stats = { daily: {} };
+  for (let i = 0; i < DAILY_DAYS_KEPT + 5; i++) recordDaily(stats, new Date(2026, 0, 1 + i), { runs: 1 });
+  assert.equal(Object.keys(stats.daily).length, DAILY_DAYS_KEPT);
+  assert.equal(Object.keys(stats.daily).sort()[0], '2026-01-06', 'oldest days are dropped');
+  assert.equal(dailySeries(stats, new Date(2026, 2, 7), 3).map((d) => d.runs).join(), '1,1,0');
+});
+
 test('Compactor gzips a file and can delete the original', async () => {
   const zlib = await import('node:zlib');
   const { fileInfo } = await import('../src/cards.js');

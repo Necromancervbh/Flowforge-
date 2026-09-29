@@ -24,6 +24,7 @@
       <div class="stat" title="Successful runs"><span>⚙️</span><b id="stat-runs">0</b></div>
       <button class="stat stat-btn theme-toggle" id="sound-toggle" title="Mute sound" aria-label="Mute sound">🔊</button>
       <button class="stat stat-btn theme-toggle" id="theme-toggle" title="Switch to light theme" aria-label="Switch to light theme">☀️</button>
+      <button class="stat stat-btn" id="open-stats" title="Stats" aria-label="Stats">📊</button>
       <button class="stat stat-btn" id="open-achievements" title="Achievements"><span>🏆</span><b id="stat-ach">0/0</b></button>
     </div>
   </header>
@@ -107,6 +108,22 @@
       <button class="ghost small" id="close-achievements">Close</button>
     </div>
     <div class="ach-grid" id="ach-grid"></div>
+  </dialog>
+
+  <dialog id="stats">
+    <div class="dialog-head">
+      <h2>📊 Stats</h2>
+      <button class="ghost small" id="close-stats">Close</button>
+    </div>
+    <div class="stat-tiles" id="stat-tiles"></div>
+    <h3>Runs, last 14 days</h3>
+    <div class="chart" id="runs-chart"></div>
+    <details class="chart-table">
+      <summary>Show as a table</summary>
+      <table id="runs-table"></table>
+    </details>
+    <h3>Busiest combos</h3>
+    <ol class="top-combos" id="top-combos"></ol>
   </dialog>
 
   <div class="toasts" id="toasts"></div>

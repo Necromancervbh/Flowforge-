@@ -58,7 +58,7 @@ export function newProfile() {
   return {
     xp: 0,
     achievements: [],
-    stats: { runs: 0, failures: 0, secondsSaved: 0, nightRuns: 0, actions: {}, cardsUsed: [], streak: { current: 0, best: 0, lastDay: null } },
+    stats: { runs: 0, failures: 0, secondsSaved: 0, nightRuns: 0, actions: {}, cardsUsed: [], streak: { current: 0, best: 0, lastDay: null }, daily: {} },
     quests: { day: null, progress: {}, seen: {}, done: [] },
   };
 }
@@ -66,6 +66,31 @@ export function newProfile() {
 const pad = (n) => String(n).padStart(2, '0');
 const dayKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const yesterdayKey = (now) => dayKey(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1));
+
+export const DAILY_DAYS_KEPT = 60;
+
+// Runs and time saved per local day, for the stats chart. Only the most
+// recent DAILY_DAYS_KEPT days are kept so the save file stays small.
+export function recordDaily(stats, now, { runs = 0, failures = 0, seconds = 0 }) {
+  const today = dayKey(now);
+  const day = (stats.daily[today] ??= { runs: 0, failures: 0, seconds: 0 });
+  day.runs += runs;
+  day.failures += failures;
+  day.seconds += seconds;
+  const keys = Object.keys(stats.daily).sort();
+  for (const key of keys.slice(0, Math.max(0, keys.length - DAILY_DAYS_KEPT))) delete stats.daily[key];
+}
+
+// The last `days` days, oldest first, with zeros for days without runs.
+export function dailySeries(stats, now, days = 14) {
+  const out = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+    const key = dayKey(d);
+    out.push({ day: key, weekday: d.getDay(), ...{ runs: 0, failures: 0, seconds: 0 }, ...stats.daily?.[key] });
+  }
+  return out;
+}
 
 // Daily streak: consecutive local days with at least one successful run.
 export function recordStreakDay(stats, now) {

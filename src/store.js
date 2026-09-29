@@ -21,6 +21,7 @@ export class Store {
       const profile = { ...fresh.profile, ...saved.profile };
       profile.stats = { ...fresh.profile.stats, ...saved.profile?.stats };
       profile.stats.streak = { ...fresh.profile.stats.streak, ...profile.stats.streak };
+      profile.stats.daily = { ...profile.stats.daily };
       return { ...fresh, ...saved, profile };
     } catch (err) {
       const backup = `${this.file}.broken-${Date.now()}`;

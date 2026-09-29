@@ -97,6 +97,7 @@ async function refresh() {
   renderCollection();
   renderCombos();
   renderActivity();
+  if ($('#stats').open) renderStats();
   renderAchievements();
   if (!forgeRendered) renderForge();
 }
@@ -676,6 +677,102 @@ function renderAchievements() {
 
 $('#open-achievements').addEventListener('click', () => $('#achievements').showModal());
 $('#close-achievements').addEventListener('click', () => $('#achievements').close());
+
+// ---------- stats ----------
+const DAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+function dayLabel(d) {
+  const [, month, day] = d.day.split('-').map(Number);
+  const monthName = new Date(2000, month - 1, 1).toLocaleString(undefined, { month: 'short' });
+  return `${DAY_SHORT[d.weekday]} ${day} ${monthName}`;
+}
+
+// Drawn at the chart's real width so labels stay 12px on small screens.
+function runsChartHtml(days, width) {
+  const W = Math.max(280, width || 560);
+  const H = 180;
+  const top = 18;
+  const bottom = 24;
+  const plotH = H - top - bottom;
+  const max = Math.max(1, ...days.map((d) => d.runs));
+  const slot = W / days.length;
+  const barW = Math.min(28, slot - 6);
+  const y = (v) => top + plotH - (v / max) * plotH;
+  const bars = days.map((d, i) => {
+    const x = i * slot + (slot - barW) / 2;
+    const h = (d.runs / max) * plotH;
+    const today = i === days.length - 1;
+    // Rounded top only, anchored flat on the baseline.
+    const r = Math.min(4, h / 2, barW / 2);
+    const path = h > 0
+      ? `M${x} ${top + plotH}V${y(d.runs) + r}Q${x} ${y(d.runs)} ${x + r} ${y(d.runs)}H${x + barW - r}Q${x + barW} ${y(d.runs)} ${x + barW} ${y(d.runs) + r}V${top + plotH}Z`
+      : '';
+    const tip = `${dayLabel(d)}: ${d.runs} run${d.runs === 1 ? '' : 's'}${d.failures ? `, ${d.failures} failed` : ''}${d.seconds ? `, ${formatDuration(d.seconds)} saved` : ''}`;
+    return `<g class="bar${today ? ' today' : ''}" data-tip="${esc(tip)}">
+      <rect class="hit" x="${i * slot}" y="${top}" width="${slot}" height="${plotH + bottom}"></rect>
+      ${path ? `<path d="${path}"></path>` : ''}
+      ${today || d.runs === max ? `<text class="value" x="${x + barW / 2}" y="${y(d.runs) - 5}">${d.runs}</text>` : ''}
+      <text class="tick" x="${x + barW / 2}" y="${H - 6}">${today && slot >= 44 ? 'Today' : DAY_SHORT[d.weekday][0]}</text>
+    </g>`;
+  }).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Runs per day for the last 14 days, up to ${max} a day">
+    <path class="grid" d="M0 ${y(max)}H${W}M0 ${top + plotH}H${W}"></path>
+    ${bars}
+  </svg><div class="chart-tip" hidden></div>`;
+}
+
+function renderStats() {
+  const p = state.player;
+  const s = p.stats;
+  const tries = s.runs + s.failures;
+  const tiles = [
+    ['⚙️', s.runs, 'successful runs'],
+    ['✅', tries ? `${Math.round((s.runs / tries) * 100)}%` : '–', 'success rate'],
+    ['⏳', formatDuration(s.secondsSaved), 'manual work saved'],
+    ['🔥', s.streak.best, `best streak (now ${p.streak})`],
+    ['🃏', `${s.cardsUsed.length}/${state.cards.length}`, 'different cards used'],
+  ];
+  $('#stat-tiles').innerHTML = tiles.map(([emoji, value, label]) =>
+    `<div class="stat-tile"><span>${emoji}</span><b>${esc(value)}</b><small>${esc(label)}</small></div>`).join('');
+
+  $('#runs-chart').innerHTML = runsChartHtml(p.daily, $('#runs-chart').clientWidth);
+  $('#runs-table').innerHTML = '<tr><th>Day</th><th>Runs</th><th>Failed</th><th>Saved</th></tr>'
+    + p.daily.map((d) => `<tr><td>${esc(dayLabel(d))}</td><td>${d.runs}</td><td>${d.failures}</td><td>${formatDuration(d.seconds)}</td></tr>`).join('');
+
+  const top = [...state.combos].filter((c) => c.runs).sort((a, b) => b.runs - a.runs).slice(0, 5);
+  const most = top[0]?.runs || 1;
+  $('#top-combos').innerHTML = top.length
+    ? top.map((c) => `<li><span class="name">${esc(c.name)}</span>
+        <span class="track"><span class="fill" style="width:${Math.max(2, (c.runs / most) * 100)}%"></span></span>
+        <span class="num">${c.runs}</span></li>`).join('')
+    : '<li class="empty">No runs yet. Press ▶ Play on a combo!</li>';
+}
+
+// Hover (or focus) a day to see its numbers.
+$('#runs-chart').addEventListener('pointermove', (e) => {
+  const bar = e.target.closest('.bar');
+  const tip = $('#runs-chart .chart-tip');
+  if (!tip) return;
+  if (!bar) {
+    tip.hidden = true;
+    return;
+  }
+  const box = $('#runs-chart').getBoundingClientRect();
+  tip.textContent = bar.dataset.tip;
+  tip.hidden = false;
+  const x = Math.min(e.clientX - box.left + 12, box.width - tip.offsetWidth - 4);
+  tip.style.transform = `translate(${Math.max(0, x)}px, ${e.clientY - box.top - 36}px)`;
+});
+$('#runs-chart').addEventListener('pointerleave', () => {
+  const tip = $('#runs-chart .chart-tip');
+  if (tip) tip.hidden = true;
+});
+
+$('#open-stats').addEventListener('click', () => {
+  $('#stats').showModal();
+  renderStats();
+});
+$('#close-stats').addEventListener('click', () => $('#stats').close());
 
 // ---------- theme ----------
 function applyTheme(theme) {
