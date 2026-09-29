@@ -81,7 +81,7 @@
     .demo-bar i { width: 11px; height: 11px; border-radius: 50%; background: var(--line); }
     .demo-bar i:nth-child(1) { background: #ff5f57; } .demo-bar i:nth-child(2) { background: #febc2e; } .demo-bar i:nth-child(3) { background: #28c840; }
     .demo-bar span { margin-left: 8px; }
-    .demo img { display: block; width: 100%; height: auto; }
+    .demo img, .demo video { display: block; width: 100%; height: auto; }
     .demo-steps { display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: center; margin: 16px auto 0; padding: 0; list-style: none; color: var(--muted); font-size: 14px; counter-reset: s; }
     .demo-steps li::before { counter-increment: s; content: counter(s); display: inline-grid; place-items: center; width: 20px; height: 20px; margin-right: 6px; border-radius: 50%; background: var(--ember); color: #1c0f05; font-size: 12px; font-weight: 800; }
     h2 { font-size: clamp(24px, 3.6vw, 34px); margin: 0 0 10px; text-align: center; }
@@ -155,10 +155,15 @@
 
     <section id="demo">
       <h2>See it in action</h2>
-      <p class="sub">Fifteen seconds from recipe to level-up.</p>
+      <p class="sub">Twelve seconds from recipe to level-up.</p>
       <div class="demo">
         <div class="demo-bar"><i></i><i></i><i></i><span>localhost:4777 · FlowForge</span></div>
-        <img src="screenshots/demo.gif" alt="Demo: clicking the Stretch Break recipe, forging it, pressing Play, reaching level 2 and opening a card pack with 8 new cards" width="800" height="507" loading="lazy">
+        <video autoplay muted loop playsinline preload="metadata" width="1200" height="760" poster="screenshots/demo-poster.jpg"
+               aria-label="Demo: clicking the Stretch Break recipe, forging it, pressing Play, reaching level 2 and opening a card pack with 8 new cards">
+          <source src="screenshots/demo.webm" type="video/webm">
+          <source src="screenshots/demo.mp4" type="video/mp4">
+          <img src="screenshots/demo.gif" alt="Demo: recipe, forge, Play, level up, card pack" width="800" height="507">
+        </video>
       </div>
       <ol class="demo-steps">
         <li>Pick a starter recipe</li>
