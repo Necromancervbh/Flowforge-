@@ -200,6 +200,15 @@ const ART = {
     <path fill="none" d="M13 29L32 42L51 29"/>
     <circle cx="32" cy="42" r="5" fill="#5865f2"/>`,
 
+  wait: `
+    <rect x="12" y="5" width="40" height="7" rx="3" fill="#8a5530"/>
+    <rect x="12" y="52" width="40" height="7" rx="3" fill="#8a5530"/>
+    <path fill="#dff1ff" d="M17 12H47Q47 26 35 32Q47 38 47 52H17Q17 38 29 32Q17 26 17 12Z"/>
+    <path fill="#ffd166" stroke="none" d="M22 18H42Q40 25 32 29Q24 25 22 18Z"/>
+    <path fill="#ffd166" stroke="none" d="M20 50Q24 42 32 40Q40 42 44 50Z"/>
+    <path stroke="#ffd166" stroke-width="2" d="M32 31V40"/>
+    ${star(56, 20, 5)}`,
+
   'run-command': `
     <rect x="4" y="8" width="42" height="32" rx="5" fill="#241c16"/>
     <path fill="none" stroke="#4cc38a" stroke-width="3" d="M11 18L17 23L11 28M21 30H30"/>

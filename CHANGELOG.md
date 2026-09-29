@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- ⏳ **Hourglass** action card (level 2): wait N seconds (max 300) before the next card
+
 ## 1.0.0 (2026-09-28)
 
 The first full release: a deckbuilder where every card is a real automation on your PC.

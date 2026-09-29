@@ -99,6 +99,23 @@ test('each combo keeps its last 5 outcomes, newest first', async () => {
   assert.match(fresh.history[0].text, /Sorting Hat failed/);
 });
 
+test('Hourglass waits between actions, and is capped', async () => {
+  const { MAX_WAIT_SECONDS } = await import('../src/cards.js');
+  engine.store.profile.xp = 100;
+  const combo = engine.saveCombo({
+    name: 'Slow',
+    trigger: { card: 'manual' },
+    actions: [{ card: 'notify', params: { title: 'one' } }, { card: 'wait', params: { seconds: 1 } }, { card: 'notify', params: { title: 'two' } }],
+  });
+  const started = Date.now();
+  const result = await engine.fire(combo.id, {}, 'manual');
+  assert.equal(result.status, 'ok');
+  assert.ok(Date.now() - started >= 950, 'should wait about a second');
+  assert.deepEqual(calls.map((c) => c[1]), ['one', 'two']);
+  assert.equal(result.summaries[1], 'Waited 1s');
+  assert.equal(MAX_WAIT_SECONDS, 300);
+});
+
 test('conditions can hold a combo back', async () => {
   const combo = engine.saveCombo({
     name: 'Filtered',
