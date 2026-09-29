@@ -1,0 +1,10 @@
+# FlowForge has no npm dependencies, so only the GitHub Actions used by CI
+# and the release workflow need keeping up to date.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ci
