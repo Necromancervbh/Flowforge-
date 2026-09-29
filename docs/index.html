@@ -75,6 +75,15 @@
     .shot img { display: block; width: 100%; height: auto; }
 
     section { padding: 64px 0 8px; }
+
+    .demo { max-width: 820px; margin: 0 auto; border-radius: var(--radius); border: 1px solid var(--line); background: var(--panel); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4); overflow: hidden; }
+    .demo-bar { display: flex; align-items: center; gap: 7px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--bg-2); font-size: 13px; color: var(--muted); }
+    .demo-bar i { width: 11px; height: 11px; border-radius: 50%; background: var(--line); }
+    .demo-bar i:nth-child(1) { background: #ff5f57; } .demo-bar i:nth-child(2) { background: #febc2e; } .demo-bar i:nth-child(3) { background: #28c840; }
+    .demo-bar span { margin-left: 8px; }
+    .demo img { display: block; width: 100%; height: auto; }
+    .demo-steps { display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: center; margin: 16px auto 0; padding: 0; list-style: none; color: var(--muted); font-size: 14px; counter-reset: s; }
+    .demo-steps li::before { counter-increment: s; content: counter(s); display: inline-grid; place-items: center; width: 20px; height: 20px; margin-right: 6px; border-radius: 50%; background: var(--ember); color: #1c0f05; font-size: 12px; font-weight: 800; }
     h2 { font-size: clamp(24px, 3.6vw, 34px); margin: 0 0 10px; text-align: center; }
     .sub { text-align: center; color: var(--muted); margin: 0 auto 32px; max-width: 640px; }
 
@@ -119,6 +128,7 @@
     <nav>
       <a class="brand" href="#">⚒️ Flow<span>Forge</span></a>
       <div class="links">
+        <a href="#demo">Demo</a>
         <a href="#how">How it works</a>
         <a href="#features">Features</a>
         <a href="#start">Get started</a>
@@ -142,6 +152,21 @@
       </div>
       <div class="shot"><img src="screenshots/overview.png" alt="FlowForge: card collection, the forge, your combos and the battle log" width="1440" height="960"></div>
     </header>
+
+    <section id="demo">
+      <h2>See it in action</h2>
+      <p class="sub">Fifteen seconds from recipe to level-up.</p>
+      <div class="demo">
+        <div class="demo-bar"><i></i><i></i><i></i><span>localhost:4777 · FlowForge</span></div>
+        <img src="screenshots/demo.gif" alt="Demo: clicking the Stretch Break recipe, forging it, pressing Play, reaching level 2 and opening a card pack with 8 new cards" width="800" height="507" loading="lazy">
+      </div>
+      <ol class="demo-steps">
+        <li>Pick a starter recipe</li>
+        <li>Forge the combo</li>
+        <li>Press ▶ Play and earn XP</li>
+        <li>Level up and open a 📦 card pack</li>
+      </ol>
+    </section>
 
     <section id="how">
       <h2>How it works</h2>
@@ -173,6 +198,8 @@
         <div class="feature"><div class="icon">🃏</div><h3>32 hand-drawn cards</h3><p>Common to legendary, each with its own illustration. Epic cards glow and legendary ones shimmer.</p></div>
         <div class="feature"><div class="icon">⭐</div><h3>Levels &amp; unlocks</h3><p>Every successful run earns XP. Level up to unlock Web Watcher, Raven, Arcane Command and more.</p></div>
         <div class="feature"><div class="icon">🔥</div><h3>Quests, streaks &amp; achievements</h3><p>Three daily quests for bonus XP, a daily streak to keep alive, and 13 achievements from <i>First Forge</i> to <i>Grand Collector</i>.</p></div>
+        <div class="feature"><div class="icon">📦</div><h3>Card packs &amp; fanfares</h3><p>Every level-up hands you a pack to tear open. Runs go <i>ka-ching</i> and level-ups play a fanfare (with a mute button).</p></div>
+        <div class="feature"><div class="icon">📊</div><h3>Stats &amp; combo chains</h3><p>See runs per day and your busiest combos, and chain small combos into big ones with ⛓️ Chain Reaction.</p></div>
         <div class="feature"><div class="icon">📤</div><h3>Share combos</h3><p>Turn any combo into an <code>FF1-…</code> code a friend can import. Secrets such as webhook URLs are left out.</p></div>
         <div class="feature"><div class="icon">📜</div><h3>See what happened</h3><p>Every combo keeps its last 5 runs, plus a Battle Log you can save as a text file.</p></div>
         <div class="feature"><div class="icon">🛡️</div><h3>Safe by design</h3><p>Only listens on your own PC, never overwrites files, and has loop guards so a combo can't trigger itself forever.</p></div>
