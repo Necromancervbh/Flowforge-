@@ -17,6 +17,7 @@ import { expandHome, tildify } from './platform.js';
 
 export const CLIPBOARD_POLL_MS = 1500;
 export const FILE_POLL_MS = 1000;
+export const MAX_WAIT_SECONDS = 300;
 
 const TEMP_FILE =/(\.(crdownload|part|partial|tmp|download|swp)$)|(^~\$)|(^\.)/i;
 
@@ -612,6 +613,21 @@ const ACTIONS = [
       });
       if (!res.ok) throw new Error(`Discord said ${res.status}`);
       return 'Sent a Discord message';
+    },
+  },
+  {
+    id: 'wait',
+    name: 'Hourglass',
+    emoji: '⏳',
+    rarity: 'common',
+    unlock: 2,
+    saves: 0,
+    text: 'Wait a few seconds before the next card, e.g. let an app finish starting.',
+    params: [{ key: 'seconds', label: 'Wait (seconds)', type: 'number', default: 5, min: 1, required: true }],
+    async run(params) {
+      const seconds = Math.min(MAX_WAIT_SECONDS, Math.max(1, Number(params.seconds) || 1));
+      await new Promise((r) => setTimeout(r, seconds * 1000));
+      return `Waited ${seconds}s`;
     },
   },
   {

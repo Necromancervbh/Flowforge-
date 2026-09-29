@@ -89,6 +89,7 @@ New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screens
 | | 🎩 Sorting Hat | rare | Lv 1 | Move the file to a folder |
 | | 📜 Scribe | common | Lv 1 | Append a line to a text file |
 | | 📎 Echo | rare | Lv 2 | Copy text to the clipboard (e.g. a new download's path) |
+| | ⏳ Hourglass | common | Lv 2 | Wait N seconds (max 300) before the next card |
 | | 🌀 Portal | common | Lv 2 | Open a website |
 | | 📂 Summon | common | Lv 2 | Open a file, folder or app |
 | | 🪞 Mirror Image | rare | Lv 3 | Copy the file to a folder |
