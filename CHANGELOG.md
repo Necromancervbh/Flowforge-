@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## 1.1.0 (2026-09-29)
+
+New cards, daily quests and a double-click download. Now 27 cards.
 
 - 🔋 **Low Battery** and 📶 **Back Online** trigger cards (level 3), with `{{battery.percent}}` and `{{network.offlineFor}}`
 - 🖱️ **Double-click launchers**: `FlowForge.bat` (Windows), `FlowForge.command` (macOS), `flowforge.sh` (Linux); they check for Node.js 20+ and open nodejs.org if it's missing
@@ -9,6 +11,7 @@
 - 📅 **Calendar Gate** can now pick specific days, e.g. `mon, wed, fri` (typos are reported instead of silently never matching)
 - 🃏 **Card Collector** (10 different cards, +100 XP) and 👑 **Grand Collector** (20, +250 XP) achievements
 - 📅 **Daily quests**: three small goals a day (run 3 combos, press ▶ Play, use 3 different action cards…) for bonus XP; a new set appears each day
+- 🌐 A [landing page](https://necromancervbh.github.io/Flowforge-/) with screenshots and download steps
 
 ## 1.0.0 (2026-09-28)
 
