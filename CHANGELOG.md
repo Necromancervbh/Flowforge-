@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- 🖱️ **Double-click launchers**: `FlowForge.bat` (Windows), `FlowForge.command` (macOS), `flowforge.sh` (Linux); they check for Node.js 20+ and open nodejs.org if it's missing
+- 📦 Each published release gets a ready-to-run `FlowForge-<version>.zip` attached automatically
 - ⏳ **Hourglass** action card (level 2): wait N seconds (max 300) before the next card
 - 📅 **Calendar Gate** can now pick specific days, e.g. `mon, wed, fri` (typos are reported instead of silently never matching)
 - 🃏 **Card Collector** (10 different cards, +100 XP) and 👑 **Grand Collector** (20, +250 XP) achievements

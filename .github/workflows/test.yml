@@ -21,3 +21,13 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: npm test
+      - name: Launcher starts FlowForge (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: FlowForge.bat --version
+      - name: Launcher starts FlowForge (macOS)
+        if: runner.os == 'macOS'
+        run: ./FlowForge.command --version
+      - name: Launcher starts FlowForge (Linux)
+        if: runner.os == 'Linux'
+        run: ./flowforge.sh --version

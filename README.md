@@ -33,6 +33,18 @@ Every card has its own hand-drawn SVG illustration (`public/art.js`), so there a
 
 Needs [Node.js](https://nodejs.org) 20 or newer. There are no other dependencies.
 
+**Double-click:** download the zip from the [latest release](https://github.com/Necromancervbh/Flowforge-/releases/latest), unzip it, then open:
+
+| System | Launcher |
+|---|---|
+| Windows | `FlowForge.bat` |
+| macOS | `FlowForge.command` (the first time, right-click → **Open** to get past Gatekeeper) |
+| Linux | `./flowforge.sh` |
+
+If Node.js is missing, the launcher says so and opens nodejs.org for you.
+
+**From the terminal:**
+
 ```bash
 git clone https://github.com/necromancervbh/flowforge-.git
 cd flowforge-
