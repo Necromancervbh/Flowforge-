@@ -4,6 +4,7 @@
 
 - ⏳ **Hourglass** action card (level 2): wait N seconds (max 300) before the next card
 - 📅 **Calendar Gate** can now pick specific days, e.g. `mon, wed, fri` (typos are reported instead of silently never matching)
+- 🃏 **Card Collector** (10 different cards, +100 XP) and 👑 **Grand Collector** (20, +250 XP) achievements
 
 ## 1.0.0 (2026-09-28)
 

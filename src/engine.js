@@ -203,6 +203,10 @@ export class Engine extends EventEmitter {
     for (const slot of combo.actions) {
       profile.stats.actions[slot.card] = (profile.stats.actions[slot.card] || 0) + 1;
     }
+    // Every distinct card that has been part of a successful run.
+    const used = new Set(profile.stats.cardsUsed);
+    for (const slot of [combo.trigger, ...combo.conditions, ...combo.actions]) used.add(slot.card);
+    profile.stats.cardsUsed = [...used];
 
     const comboLevel = comboLevelInfo(combo.xp).level;
     if (comboLevel > comboLevelBefore) {
