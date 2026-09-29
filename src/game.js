@@ -59,6 +59,7 @@ export function newProfile() {
     xp: 0,
     achievements: [],
     stats: { runs: 0, failures: 0, secondsSaved: 0, nightRuns: 0, actions: {}, cardsUsed: [], streak: { current: 0, best: 0, lastDay: null } },
+    quests: { day: null, progress: {}, seen: {}, done: [] },
   };
 }
 
@@ -81,6 +82,79 @@ export function recordStreakDay(stats, now) {
 export function liveStreak(stats, now) {
   const { current, lastDay } = stats.streak;
   return lastDay === dayKey(now) || lastDay === yesterdayKey(now) ? current : 0;
+}
+
+// ---------- daily quests ----------
+
+// on: which engine event advances the quest. count() returns how much an event
+// adds; distinct() returns values of which only new ones count.
+export const QUESTS = [
+  { id: 'run-3', emoji: '⚙️', text: 'Run 3 combos', goal: 3, xp: 40, on: 'run', count: () => 1 },
+  { id: 'files-2', emoji: '🧹', text: 'Move, copy, rename or compress 2 files', goal: 2, xp: 40, on: 'run',
+    count: ({ combo }) => combo.actions.filter((a) => FILE_ACTIONS.includes(a.card)).length },
+  { id: 'forge-1', emoji: '⚒️', text: 'Forge or reforge a combo', goal: 1, xp: 30, on: 'forge', count: () => 1 },
+  { id: 'filtered-1', emoji: '🔎', text: 'Finish a run that passed an IF card', goal: 1, xp: 30, on: 'run',
+    count: ({ combo }) => (combo.conditions.length ? 1 : 0) },
+  { id: 'variety-3', emoji: '🎴', text: 'Use 3 different action cards', goal: 3, xp: 50, on: 'run',
+    distinct: ({ combo }) => combo.actions.map((a) => a.card) },
+  { id: 'play-1', emoji: '▶️', text: 'Press ▶ Play on a combo', goal: 1, xp: 20, on: 'run',
+    count: ({ source }) => (source === 'manual' ? 1 : 0) },
+];
+export const QUESTS_PER_DAY = 3;
+
+// The same 3 quests all day (stable across restarts), different ones tomorrow.
+export function questsForDay(key) {
+  let seed = 0;
+  for (const ch of key) seed = (seed * 31 + ch.charCodeAt(0)) >>> 0;
+  const pool = [...QUESTS];
+  const picked = [];
+  while (picked.length < QUESTS_PER_DAY) {
+    seed = (seed * 1103515245 + 12345) >>> 0;
+    picked.push(pool.splice(seed % pool.length, 1)[0]);
+  }
+  return picked;
+}
+
+function questState(profile, now) {
+  const today = dayKey(now);
+  if (profile.quests?.day !== today) profile.quests = { day: today, progress: {}, seen: {}, done: [] };
+  return profile.quests;
+}
+
+// Advances today's quests for an engine event and pays out XP for any that
+// complete. Returns the quests completed now.
+export function progressQuests(profile, event, data, now) {
+  const state = questState(profile, now);
+  const completed = [];
+  for (const quest of questsForDay(state.day)) {
+    if (quest.on !== event || state.done.includes(quest.id)) continue;
+    if (quest.distinct) {
+      const seen = new Set(state.seen[quest.id] || []);
+      for (const value of quest.distinct(data)) seen.add(value);
+      state.seen[quest.id] = [...seen];
+      state.progress[quest.id] = seen.size;
+    } else {
+      state.progress[quest.id] = (state.progress[quest.id] || 0) + quest.count(data);
+    }
+    if (state.progress[quest.id] >= quest.goal) {
+      state.progress[quest.id] = quest.goal;
+      state.done.push(quest.id);
+      profile.xp += quest.xp;
+      completed.push(quest);
+    }
+  }
+  return completed;
+}
+
+// Today's quests with progress, for the UI (read-only: yesterday's progress shows as 0).
+export function questStatus(profile, now) {
+  const today = dayKey(now);
+  const state = profile.quests?.day === today ? profile.quests : { progress: {}, done: [] };
+  return questsForDay(today).map(({ id, emoji, text, goal, xp }) => ({
+    id, emoji, text, goal, xp,
+    progress: Math.min(goal, state.progress[id] || 0),
+    done: state.done.includes(id),
+  }));
 }
 
 // Unlocks any newly earned achievements (repeatedly, since achievement XP

@@ -136,6 +136,7 @@ The **Arcane Command** card is the exception: it gets these as environment varia
 - Combos level up separately (★) the more they run.
 - There are 13 achievements, from *First Forge* to *Perpetual Motion*, each with bonus XP (including 🃏 *Card Collector* and 👑 *Grand Collector* for using 10 and 20 different cards).
 - A 🔥 daily streak counts the days in a row your combos have run (*Warming Up* at 3 days, *On Fire* at 7).
+- 📅 **Daily quests**: three small goals each day (e.g. *Run 3 combos*, *Press ▶ Play on a combo*) worth 20–50 bonus XP each. Tomorrow brings a new set.
 
 ## Safety
 

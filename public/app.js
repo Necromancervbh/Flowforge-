@@ -469,8 +469,24 @@ $('#combo-list').addEventListener('toggle', (e) => {
   else openHistories.delete(id);
 }, true);
 
+function renderQuests() {
+  const quests = state.quests || [];
+  const done = quests.filter((q) => q.done).length;
+  $('#quest-list').innerHTML = quests.map((q) => `
+    <li class="quest ${q.done ? 'done' : ''}">
+      <span class="quest-emoji">${q.done ? '✅' : q.emoji}</span>
+      <span class="quest-body">
+        <span class="quest-text">${esc(q.text)}</span>
+        <span class="bar"><span class="bar-fill" style="width:${Math.round((q.progress / q.goal) * 100)}%"></span></span>
+      </span>
+      <span class="quest-meta">${q.progress}/${q.goal}<small>+${q.xp} XP</small></span>
+    </li>`).join('')
+    + (quests.length && done === quests.length ? '<li class="quest-all">🎉 All done for today. New quests tomorrow!</li>' : '');
+}
+
 function renderCombos() {
   renderToggleAll();
+  renderQuests();
   $('#combo-list').innerHTML = state.combos.length
     ? state.combos.map(comboHtml).join('')
     : '<div class="empty">No combos yet.<br>Build one in the forge, or start from a recipe below 👇</div>';

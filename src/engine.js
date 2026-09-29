@@ -11,6 +11,7 @@ import { render, baseContext } from './template.js';
 import {
   XP_PER_RUN, XP_PER_ACTION, levelInfo, levelFromXp, comboLevelInfo,
   checkAchievements, ACHIEVEMENTS, publicAchievement, recordStreakDay, liveStreak,
+  progressQuests, questStatus,
 } from './game.js';
 
 const MAX_ACTIVITY = 150;
@@ -159,7 +160,7 @@ export class Engine extends EventEmitter {
         seconds += card.saves || 0;
       }
       this.recordHistory(combo, 'ok', summaries.join(' · '));
-      this.reward(combo, seconds);
+      this.reward(combo, seconds, source);
       const gain = XP_PER_RUN + XP_PER_ACTION * combo.actions.length;
       this.log('ok', `${combo.name}: ${summaries.join(' · ')} (+${gain} XP)`, combo.id);
       return { status: 'ok', summaries, gain };
@@ -182,7 +183,7 @@ export class Engine extends EventEmitter {
       .slice(0, HISTORY_LENGTH);
   }
 
-  reward(combo, seconds) {
+  reward(combo, seconds, source = 'trigger') {
     const profile = this.store.profile;
     const gain = XP_PER_RUN + XP_PER_ACTION * combo.actions.length;
     const levelBefore = this.playerLevel;
@@ -203,6 +204,8 @@ export class Engine extends EventEmitter {
     for (const slot of combo.actions) {
       profile.stats.actions[slot.card] = (profile.stats.actions[slot.card] || 0) + 1;
     }
+    this.announceQuests(progressQuests(profile, 'run', { combo, source }, now));
+
     // Every distinct card that has been part of a successful run.
     const used = new Set(profile.stats.cardsUsed);
     for (const slot of [combo.trigger, ...combo.conditions, ...combo.actions]) used.add(slot.card);
@@ -214,6 +217,13 @@ export class Engine extends EventEmitter {
     }
     this.celebrate(levelBefore);
     this.changed();
+  }
+
+  announceQuests(quests) {
+    for (const q of quests) {
+      this.emit('event', { type: 'toast', kind: 'achievement', title: `${q.emoji} Quest complete`, message: `${q.text}. +${q.xp} XP` });
+      this.log('ok', `Daily quest complete: ${q.emoji} ${q.text} (+${q.xp} XP)`);
+    }
   }
 
   // Announces achievements and level-ups since `levelBefore`.
@@ -301,6 +311,7 @@ export class Engine extends EventEmitter {
     }
     this.arm(combo);
     this.log('info', `${existing ? 'Reforged' : 'Forged'} combo "${combo.name}".`, combo.id);
+    this.announceQuests(progressQuests(this.store.profile, 'forge', { combo }, this.now()));
     this.celebrate(levelBefore);
     this.changed();
     return combo;
@@ -348,6 +359,7 @@ export class Engine extends EventEmitter {
     const player = levelInfo(profile.xp);
     return {
       player: { ...player, stats: profile.stats, streak: liveStreak(profile.stats, this.now()) },
+      quests: questStatus(profile, this.now()),
       cards: CARDS.map((c) => publicCard(c, player.level)),
       combos: this.store.combos.map((c) => ({
         ...c,
