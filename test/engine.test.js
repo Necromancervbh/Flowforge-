@@ -404,6 +404,32 @@ test('daily streaks grow on consecutive days, reset after a gap and unlock achie
   assert.equal(streak().best, 4);
 });
 
+test('Card Collector counts distinct cards across successful runs', async () => {
+  engine.store.profile.xp = 10000;
+  const fire = async (actions, conditions = []) => {
+    const combo = engine.saveCombo({ name: `c${Math.random()}`, trigger: { card: 'manual' }, conditions, actions });
+    return engine.fire(combo.id, {}, 'manual');
+  };
+  await fire([{ card: 'notify' }, { card: 'notify' }]);
+  assert.deepEqual(engine.store.profile.stats.cardsUsed.sort(), ['manual', 'notify']);
+
+  // A held-back run doesn't count its cards.
+  await fire([{ card: 'write-log', params: { file: path.join(dir, 'x.txt') } }],
+    [{ card: 'text-contains', params: { text: 'a', word: 'b' } }]);
+  assert.equal(engine.store.profile.stats.cardsUsed.length, 2);
+
+  await fire(
+    [{ card: 'write-log', params: { file: path.join(dir, 'x.txt') } }, { card: 'wait', params: { seconds: 1 } }],
+    [{ card: 'time-window', params: { from: '00:00', to: '23:59' } }, { card: 'day-type', params: { days: 'weekends' } },
+      { card: 'text-contains', params: { text: 'abc', word: 'b' } }],
+  );
+  engine.store.profile.stats.cardsUsed.push('copy-file', 'move-file', 'open-url'); // pretend earlier runs
+  await fire([{ card: 'notify' }]);
+  assert.ok(engine.store.profile.stats.cardsUsed.length >= 10);
+  assert.ok(engine.store.profile.achievements.includes('cards-10'));
+  assert.ok(!engine.store.profile.achievements.includes('cards-20'));
+});
+
 test('reaching a new level unlocks cards and announces them', async () => {
   engine.store.profile.xp = 95;
   const toasts = [];

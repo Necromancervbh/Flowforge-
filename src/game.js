@@ -46,6 +46,10 @@ export const ACHIEVEMENTS = [
     test: ({ stats }) => stats.streak.best >= 3 },
   { id: 'streak-7', emoji: '🌋', name: 'On Fire', text: 'Have combos run 7 days in a row.', xp: 150,
     test: ({ stats }) => stats.streak.best >= 7 },
+  { id: 'cards-10', emoji: '🃏', name: 'Card Collector', text: 'Run combos using 10 different cards.', xp: 100,
+    test: ({ stats }) => stats.cardsUsed.length >= 10 },
+  { id: 'cards-20', emoji: '👑', name: 'Grand Collector', text: 'Run combos using 20 different cards.', xp: 250,
+    test: ({ stats }) => stats.cardsUsed.length >= 20 },
   { id: 'runs-100', emoji: '♾️', name: 'Perpetual Motion', text: '100 successful runs.', xp: 200,
     test: ({ stats }) => stats.runs >= 100 },
 ];
@@ -54,7 +58,7 @@ export function newProfile() {
   return {
     xp: 0,
     achievements: [],
-    stats: { runs: 0, failures: 0, secondsSaved: 0, nightRuns: 0, actions: {}, streak: { current: 0, best: 0, lastDay: null } },
+    stats: { runs: 0, failures: 0, secondsSaved: 0, nightRuns: 0, actions: {}, cardsUsed: [], streak: { current: 0, best: 0, lastDay: null } },
   };
 }
 
