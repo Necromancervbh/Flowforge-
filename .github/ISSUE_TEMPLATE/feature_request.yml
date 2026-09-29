@@ -1,0 +1,11 @@
+name: ✨ Feature request
+description: An idea that isn't a new card
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea
+      description: What would you like, and what problem does it solve?
+    validations:
+      required: true
