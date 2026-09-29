@@ -130,6 +130,16 @@ const ART = {
     <circle cx="52" cy="48" r="9" fill="#4cc38a"/>
     <path fill="none" stroke="#fff" stroke-width="2.5" d="M47.5 48L50.5 51L56 45"/>`,
 
+  'lucky-charm': `
+    <path fill="none" stroke="#3f8f3a" stroke-width="4" d="M32 34Q36 48 28 58"/>
+    <g fill="#5cc85a">
+      <path d="M32 32C22 32 14 26 17 18C20 11 29 13 32 20C35 13 44 11 47 18C50 26 42 32 32 32Z" transform="rotate(0 32 32)"/>
+      <path d="M32 32C22 32 14 26 17 18C20 11 29 13 32 20C35 13 44 11 47 18C50 26 42 32 32 32Z" transform="rotate(90 32 32)"/>
+      <path d="M32 32C22 32 14 26 17 18C20 11 29 13 32 20C35 13 44 11 47 18C50 26 42 32 32 32Z" transform="rotate(180 32 32)"/>
+      <path d="M32 32C22 32 14 26 17 18C20 11 29 13 32 20C35 13 44 11 47 18C50 26 42 32 32 32Z" transform="rotate(270 32 32)"/>
+    </g>
+    <circle cx="32" cy="32" r="3.5" fill="#3f8f3a"/>
+    ${star(53, 11, 6)}${star(10, 52, 4)}`,
   'file-size': `
     <path stroke="#8a5530" stroke-width="4" d="M32 14V52M21 55H43"/>
     <path stroke="#b0b8c4" stroke-width="3.5" d="M9 18L55 24"/>

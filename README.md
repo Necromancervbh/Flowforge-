@@ -105,6 +105,7 @@ New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screens
 | | 🕘 Office Hours | common | Lv 2 | Only between two times |
 | | 📅 Calendar Gate | common | Lv 2 | Only weekdays, weekends, or listed days (`mon, wed, fri`) |
 | | ⚖️ Heavy Load | rare | Lv 3 | File bigger / smaller than N MB |
+| | 🍀 Lucky Charm | rare | Lv 3 | Only N% of the time, for surprises |
 | **THEN** | 🔔 Town Crier | common | Lv 1 | Desktop notification |
 | | 🎩 Sorting Hat | rare | Lv 1 | Move the file to a folder |
 | | 📜 Scribe | common | Lv 1 | Append a line to a text file |

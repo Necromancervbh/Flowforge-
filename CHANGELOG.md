@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- 🍀 **Lucky Charm** IF card (level 3): continue only N% of the time
 - 📅 The quests panel shows how long until the next set of daily quests, and loads the new set at midnight
 
 ## 1.1.0 (2026-09-29)
