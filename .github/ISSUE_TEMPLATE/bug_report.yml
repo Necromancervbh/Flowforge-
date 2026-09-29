@@ -1,0 +1,28 @@
+name: 🐛 Bug report
+description: Something doesn't work as expected
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: combo
+    attributes:
+      label: The combo
+      description: The cards involved, or a share code (📤 Share). Leave out any secrets.
+  - type: input
+    id: system
+    attributes:
+      label: System
+      placeholder: e.g. Windows 11, Node 22.3, FlowForge 1.1.0
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Battle Log or terminal output
+      render: text
