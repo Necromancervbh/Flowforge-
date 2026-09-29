@@ -68,7 +68,7 @@ Options (after `npm start --`, e.g. `npm start -- --port 4778`):
 | `--no-open` | Don't open the browser on start |
 | `-v, --version` / `-h, --help` | Print the version / the help |
 
-New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screenshot Stash, Stretch Break, Link Collector) to load a ready-made combo into the forge. Recipes that use cards you haven't unlocked yet show 🔒 and the level they need.
+New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screenshot Stash, Stretch Break, Link Collector, Surprise Break) to load a ready-made combo into the forge. Recipes that use cards you haven't unlocked yet show 🔒 and the level they need.
 
 **Test a file combo:** press **▶ Play** on a combo that starts with *File Appears* and paste the path of a file to try it on. The combo really runs, so that file may be moved or renamed.
 
