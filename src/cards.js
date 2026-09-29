@@ -461,6 +461,19 @@ const CONDITIONS = [
     },
   },
   {
+    id: 'lucky-charm',
+    name: 'Lucky Charm',
+    emoji: '🍀',
+    rarity: 'rare',
+    unlock: 3,
+    text: 'Continue only some of the time, e.g. 25% for a surprise that doesn\'t happen every run.',
+    params: [{ key: 'chance', label: 'Chance (%)', type: 'number', default: 50, min: 1, required: true }],
+    check(params) {
+      const chance = Math.min(100, Math.max(1, Number(params.chance) || 50));
+      return Math.random() * 100 < chance;
+    },
+  },
+  {
     id: 'file-type',
     name: 'Type Gate',
     emoji: '🧩',

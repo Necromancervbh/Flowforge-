@@ -151,6 +151,23 @@ test('Calendar Gate supports weekdays, weekends and a list of specific days', ()
   assert.throws(() => gate.check({ days: 'these days', list: '' }, on(2026, 8, 28)), /at least one day/);
 });
 
+test('Lucky Charm passes the given share of the time', (t) => {
+  const charm = CARD_BY_ID.get('lucky-charm');
+  const roll = (value) => t.mock.method(Math, 'random', () => value);
+  roll(0.2);
+  assert.equal(charm.check({ chance: 25 }), true);
+  assert.equal(charm.check({ chance: 10 }), false);
+  roll(0.999);
+  assert.equal(charm.check({ chance: 100 }), true); // 100% always passes
+  assert.equal(charm.check({ chance: 500 }), true); // clamped to 100
+  roll(0);
+  assert.equal(charm.check({ chance: 1 }), true);
+  roll(0.49); // a blank chance means 50%
+  assert.equal(charm.check({}), true);
+  roll(0.5);
+  assert.equal(charm.check({}), false);
+});
+
 test('time windows work across midnight', () => {
   const check = (h, from, to) => CARD_BY_ID.get('time-window').check({ from, to }, { now: new Date(2026, 0, 1, h) });
   assert.equal(check(23, '22:00', '06:00'), true);
