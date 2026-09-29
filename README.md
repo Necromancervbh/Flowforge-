@@ -1,8 +1,14 @@
 # ⚒️ FlowForge
 
 [![Tests](https://github.com/Necromancervbh/Flowforge-/actions/workflows/test.yml/badge.svg)](https://github.com/Necromancervbh/Flowforge-/actions/workflows/test.yml)
+[![Latest release](https://img.shields.io/github/v/release/Necromancervbh/Flowforge-)](https://github.com/Necromancervbh/Flowforge-/releases/latest)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Node.js 20+](https://img.shields.io/badge/node-%E2%89%A520-339933)
+![Zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)
 
 **A deckbuilder where every card is a real automation on your PC.**
+
+🌐 **Website:** <https://necromancervbh.github.io/Flowforge-/> · ⬇️ **Download:** [latest release](https://github.com/Necromancervbh/Flowforge-/releases/latest)
 
 Snap cards together into combos: a **WHEN** card (trigger), optional **IF** cards (filters) and **THEN** cards (actions). Every combo actually runs on your computer, sorting downloads, reminding you to take breaks, logging files, pinging Discord. Each successful run earns XP, levels up the combo and your player level, and unlocks rarer cards.
 
