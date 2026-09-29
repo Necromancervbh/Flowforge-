@@ -76,6 +76,8 @@ New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screens
 
 **What did it do?** Each combo shows its **last 5 runs** (done, held back or failed) with the time and what happened.
 
+**Sound:** runs go *ka-ching*, achievements chime and level-ups play a fanfare, all synthesized in the browser. The 🔊 / 🔇 button mutes it, and FlowForge remembers.
+
 **Light or dark:** the ☀️ / 🌙 button in the header switches themes, and FlowForge remembers your choice.
 
 **Keep a record:** **💾 Save log** downloads the Battle Log as a text file (oldest entry first).
@@ -176,7 +178,7 @@ src/game.js      levels and achievements
 src/platform.js  notifications / open / shell per OS
 src/store.js     atomic JSON save file
 src/server.js    localhost API + static UI
-public/          the card-game UI (vanilla JS); card art in public/art.js, share codes in public/share.js
+public/          the card-game UI (vanilla JS); card art in public/art.js, share codes in public/share.js, sounds in public/sound.js
 ```
 
 Adding a card is one object in `src/cards.js`, plus its illustration in `public/art.js`.
