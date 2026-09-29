@@ -1,0 +1,41 @@
+name: Release package
+
+# Builds FlowForge-<tag>.zip (just the app and its launchers) and attaches it
+# to the release. Runs when a release is published, or by hand for an
+# existing tag from the Actions tab.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to attach the zip to (e.g. v1.0.0)
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
+      - name: Build zip
+        run: |
+          name="FlowForge-$TAG"
+          mkdir -p "dist/$name"
+          cp -r src public package.json LICENSE README.md CHANGELOG.md FlowForge.bat FlowForge.command flowforge.sh "dist/$name/"
+          (cd dist && zip -qr "$name.zip" "$name")
+          echo "ZIP=dist/$name.zip" >> "$GITHUB_ENV"
+      - name: Attach to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$TAG" "$ZIP" --clobber
