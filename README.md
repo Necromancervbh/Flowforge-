@@ -116,6 +116,8 @@ New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screens
 | | 🪞 Mirror Image | rare | Lv 3 | Copy the file to a folder |
 | | 🏷️ True Name | rare | Lv 3 | Rename the file |
 | | 🗜️ Compactor | rare | Lv 3 | Compress the file to `.gz` (keep or delete the original) |
+| | 🧹 Tidy Up | rare | Lv 3 | Move files older than N days out of a folder (e.g. old downloads) |
+| | 📸 Snapshot | epic | Lv 4 | Save a screenshot; later cards get it as `{{file.path}}` |
 | | 🐦‍⬛ Raven | epic | Lv 4 | Post to a Discord webhook |
 | | 🪄 Arcane Command | legendary | Lv 5 | Run a shell command |
 
@@ -132,7 +134,7 @@ Another example, a **Link Collector** that saves every link you copy:
 📋 Copycat  →  🔎 Keyword "http" in {{clip.text}}  →  📜 Scribe "{{datetime}} {{clip.text}}" to ~/Documents/links.txt
 ```
 
-On Linux, Copycat needs `wl-clipboard` (Wayland) or `xclip` / `xsel` (X11). macOS and Windows work out of the box.
+On Linux, Copycat needs `wl-clipboard` (Wayland) or `xclip` / `xsel` (X11), and Snapshot needs `grim` (Wayland) or `scrot` (X11). macOS and Windows work out of the box.
 
 The **Arcane Command** card is the exception: it gets these as environment variables (`$FF_FILE_PATH`, `$FF_FILE_NAME`, `$FF_FILE_EXT`, `$FF_COMBO`, `$FF_PAGE_URL`; use `%FF_FILE_PATH%` on Windows) so a strangely named file can't inject shell commands.
 

@@ -203,6 +203,70 @@ test('file combos move, rename and log files without overwriting', async () => {
   assert.equal(fs.readFileSync(path.join(dir, 'log.txt'), 'utf8'), `bill (1).pdf in ${path.join(sorted, 'pdf')}\n`);
 });
 
+test('Tidy Up moves only old plain files and never overwrites', async () => {
+  engine.store.profile.xp = 10000;
+  const inbox = path.join(dir, 'inbox');
+  const old = path.join(inbox, 'Old');
+  fs.mkdirSync(path.join(inbox, 'sub'), { recursive: true });
+  fs.mkdirSync(old);
+  const day = 86400000;
+  const now = new Date(2026, 8, 26, 14, 30).getTime();
+  const make = (name, ageDays, text = name) => {
+    const p = path.join(inbox, name);
+    fs.writeFileSync(p, text);
+    fs.utimesSync(p, (now - ageDays * day) / 1000, (now - ageDays * day) / 1000);
+  };
+  make('ancient.zip', 90);
+  make('recent.pdf', 2);
+  make('setup.exe.part', 90); // unfinished download
+  fs.writeFileSync(path.join(old, 'ancient.zip'), 'already archived');
+  const combo = engine.saveCombo({
+    name: 'Tidy',
+    trigger: { card: 'manual' },
+    actions: [{ card: 'tidy-up', params: { folder: inbox, days: 30, destination: old } }],
+  });
+
+  let result = await engine.fire(combo.id, {}, 'manual');
+  assert.equal(result.status, 'ok', result.error);
+  assert.match(result.summaries[0], /Moved 1 old file from/);
+  assert.equal(fs.readFileSync(path.join(old, 'ancient (1).zip'), 'utf8'), 'ancient.zip');
+  assert.equal(fs.readFileSync(path.join(old, 'ancient.zip'), 'utf8'), 'already archived');
+  assert.ok(fs.existsSync(path.join(inbox, 'recent.pdf')));
+  assert.ok(fs.existsSync(path.join(inbox, 'setup.exe.part')));
+  assert.ok(fs.existsSync(path.join(inbox, 'sub')));
+
+  result = await engine.fire(combo.id, {}, 'manual');
+  assert.match(result.summaries[0], /Nothing in .* older than 30 days/);
+
+  const same = engine.saveCombo({
+    name: 'Same',
+    trigger: { card: 'manual' },
+    actions: [{ card: 'tidy-up', params: { folder: inbox, days: 1, destination: inbox } }],
+  });
+  assert.match((await engine.fire(same.id, {}, 'manual')).error, /different folder/);
+});
+
+test('Snapshot saves a screenshot that later cards can use', async () => {
+  engine.store.profile.xp = 10000;
+  fakePlatform.takeScreenshot = async (file) => {
+    calls.push(['screenshot', file]);
+    fs.writeFileSync(file, 'png');
+  };
+  const shots = path.join(dir, 'shots');
+  const combo = engine.saveCombo({
+    name: 'Shot',
+    trigger: { card: 'manual' },
+    actions: [
+      { card: 'screenshot', params: { folder: shots } },
+      { card: 'write-log', params: { file: path.join(dir, 'log.txt'), line: '{{file.name}}' } },
+    ],
+  });
+  const result = await engine.fire(combo.id, {}, 'manual');
+  assert.equal(result.status, 'ok', result.error);
+  assert.equal(calls[0][1], path.join(shots, 'Screenshot 2026-09-26 14-30-00.png'));
+  assert.equal(fs.readFileSync(path.join(dir, 'log.txt'), 'utf8'), 'Screenshot 2026-09-26 14-30-00.png\n');
+});
+
 test('Compactor gzips a file and can delete the original', async () => {
   const zlib = await import('node:zlib');
   const { fileInfo } = await import('../src/cards.js');

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- 🧹 **Tidy Up** action card (level 3): move files older than N days out of a folder, never overwriting
+- 📸 **Snapshot** action card (level 4): save a screenshot; later cards can use it as `{{file.path}}`
 - 🍀 **Surprise Break** starter recipe: once an hour, a 25% chance of a break reminder
 - 🍀 **Lucky Charm** IF card (level 3): continue only N% of the time
 - 📅 The quests panel shows how long until the next set of daily quests, and loads the new set at midnight

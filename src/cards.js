@@ -711,6 +711,63 @@ const ACTIONS = [
     },
   },
   {
+    id: 'tidy-up',
+    name: 'Tidy Up',
+    emoji: '🧹',
+    rarity: 'rare',
+    unlock: 3,
+    saves: 60,
+    text: 'Move files older than N days out of a folder (e.g. old downloads into an archive).',
+    params: [
+      { key: 'folder', label: 'Tidy this folder', type: 'text', default: '~/Downloads', required: true },
+      { key: 'days', label: 'Older than (days)', type: 'number', default: 30, min: 1, required: true },
+      { key: 'destination', label: 'Move them to', type: 'text', default: '~/Downloads/Old', required: true },
+    ],
+    async run(params, ctx, helpers) {
+      const dir = resolveFolder(params.folder);
+      const dest = resolveFolder(params.destination);
+      if (dest === dir) throw new Error('Pick a different folder to move old files into');
+      const cutoff = ctx.now.getTime() - Math.max(1, Number(params.days) || 30) * 86400000;
+      const entries = await fsp.readdir(dir, { withFileTypes: true });
+      let moved = 0;
+      for (const entry of entries) {
+        // Only plain files directly in the folder; sub-folders are left alone.
+        if (!entry.isFile() || TEMP_FILE.test(entry.name)) continue;
+        const src = path.join(dir, entry.name);
+        const stat = await fsp.stat(src);
+        if (stat.mtimeMs >= cutoff) continue;
+        await fsp.mkdir(dest, { recursive: true });
+        const target = await uniquePath(path.join(dest, entry.name));
+        helpers.markWritten(target);
+        await moveFile(src, target);
+        moved += 1;
+      }
+      return moved
+        ? `Moved ${moved} old file${moved === 1 ? '' : 's'} from ${tildify(dir)} → ${tildify(dest)}`
+        : `Nothing in ${tildify(dir)} older than ${Number(params.days) || 30} days`;
+    },
+  },
+  {
+    id: 'screenshot',
+    name: 'Snapshot',
+    emoji: '📸',
+    rarity: 'epic',
+    unlock: 4,
+    saves: 10,
+    text: 'Save a screenshot of your screen. Later cards can use it as {{file.path}}.',
+    params: [{ key: 'folder', label: 'Save to folder', type: 'text', default: '~/Pictures/FlowForge', required: true }],
+    async run(params, ctx, helpers) {
+      const dir = resolveFolder(params.folder);
+      await fsp.mkdir(dir, { recursive: true });
+      // "2026-09-29 14-30-05": no colons, which Windows doesn't allow in names.
+      const file = await uniquePath(path.join(dir, `Screenshot ${ctx.datetime.replace(/:/g, '-')}.png`));
+      helpers.markWritten(file);
+      await helpers.platform.takeScreenshot(file);
+      ctx.file = fileInfo(file, fs.statSync(file));
+      return `Saved a screenshot to ${tildify(file)}`;
+    },
+  },
+  {
     id: 'wait',
     name: 'Hourglass',
     emoji: '⏳',
