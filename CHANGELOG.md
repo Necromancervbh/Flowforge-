@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- 📅 The quests panel shows how long until the next set of daily quests, and loads the new set at midnight
+
 ## 1.1.0 (2026-09-29)
 
 New cards, daily quests and a double-click download. Now 27 cards.
