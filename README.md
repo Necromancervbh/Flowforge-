@@ -98,6 +98,7 @@ New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screens
 | | ✏️ Tripwire | rare | Lv 3 | A specific file is edited and saved (notes, a game save…) |
 | | 🔋 Low Battery | rare | Lv 3 | Your laptop drops below N% while unplugged (once per discharge) |
 | | 📶 Back Online | rare | Lv 3 | Your internet comes back after dropping |
+| | 💤 Away From Keyboard | rare | Lv 3 | You've been away N minutes, or you come back after that long |
 | | 🔌 Power On | common | Lv 3 | When FlowForge starts |
 | | 🔭 Web Watcher | epic | Lv 4 | A web page's text changes |
 | **IF** | 🔎 Keyword Filter | common | Lv 1 | Text contains / doesn't contain a word |
@@ -124,7 +125,7 @@ New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screens
 ### Magic words
 
 Any text box can use placeholders that are filled in when the combo runs:
-`{{file.name}}`, `{{file.base}}`, `{{file.ext}}`, `{{file.path}}`, `{{file.dir}}`, `{{date}}`, `{{time}}`, `{{datetime}}`, `{{year}}`, `{{month}}`, `{{day}}`, `{{weekday}}`, `{{combo.name}}`, `{{clip.text}}`, `{{clip.snippet}}`, `{{battery.percent}}`, `{{network.offlineFor}}`, `{{page.url}}`, `{{page.title}}`, `{{page.snippet}}`.
+`{{file.name}}`, `{{file.base}}`, `{{file.ext}}`, `{{file.path}}`, `{{file.dir}}`, `{{date}}`, `{{time}}`, `{{datetime}}`, `{{year}}`, `{{month}}`, `{{day}}`, `{{weekday}}`, `{{combo.name}}`, `{{clip.text}}`, `{{clip.snippet}}`, `{{battery.percent}}`, `{{network.offlineFor}}`, `{{idle.awayFor}}`, `{{page.url}}`, `{{page.title}}`, `{{page.snippet}}`.
 
 Example: move to `~/Documents/Sorted/{{year}}/{{file.ext}}`.
 
@@ -134,7 +135,7 @@ Another example, a **Link Collector** that saves every link you copy:
 📋 Copycat  →  🔎 Keyword "http" in {{clip.text}}  →  📜 Scribe "{{datetime}} {{clip.text}}" to ~/Documents/links.txt
 ```
 
-On Linux, Copycat needs `wl-clipboard` (Wayland) or `xclip` / `xsel` (X11), and Snapshot needs `grim` (Wayland) or `scrot` (X11). macOS and Windows work out of the box.
+On Linux, Copycat needs `wl-clipboard` (Wayland) or `xclip` / `xsel` (X11), Snapshot needs `grim` (Wayland) or `scrot` (X11), and Away From Keyboard works on GNOME or with `xprintidle`. macOS and Windows work out of the box.
 
 The **Arcane Command** card is the exception: it gets these as environment variables (`$FF_FILE_PATH`, `$FF_FILE_NAME`, `$FF_FILE_EXT`, `$FF_COMBO`, `$FF_PAGE_URL`; use `%FF_FILE_PATH%` on Windows) so a strangely named file can't inject shell commands.
 

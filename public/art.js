@@ -79,6 +79,15 @@ const ART = {
     <circle cx="52" cy="50" r="9" fill="#4cc38a"/>
     <path fill="none" stroke="#fff" stroke-width="2.5" d="M47.5 50L50.5 53L56 47"/>`,
 
+  idle: `
+    <rect x="6" y="40" width="46" height="16" rx="4" fill="#5b6472"/>
+    <g fill="#8d96a3" stroke-width="1.2">
+      <rect x="11" y="44" width="6" height="4" rx="1"/><rect x="20" y="44" width="6" height="4" rx="1"/><rect x="29" y="44" width="6" height="4" rx="1"/><rect x="38" y="44" width="6" height="4" rx="1"/>
+      <rect x="15" y="50" width="26" height="3" rx="1"/>
+    </g>
+    <path fill="#b39ddb" d="M36 30A13 13 0 1 1 48 10A10 10 0 1 0 36 30Z"/>
+    <path fill="none" stroke="#fff4e6" stroke-width="2.5" d="M12 10H20L12 20H20M24 22H29L24 29H29"/>`,
+
   'on-start': `
     <circle cx="32" cy="32" r="25" fill="#1f3b2d"/>
     <circle cx="32" cy="32" r="19" fill="#27543c" stroke-width="0"/>

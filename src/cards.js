@@ -19,7 +19,7 @@ export const CLIPBOARD_POLL_MS = 1500;
 export const FILE_POLL_MS = 1000;
 export const MAX_WAIT_SECONDS = 300;
 // How often the polling triggers check (tests shorten these).
-export const POLL = { batteryMs: 60000, onlineMs: 15000 };
+export const POLL = { batteryMs: 60000, onlineMs: 15000, idleMs: 15000 };
 
 const TEMP_FILE =/(\.(crdownload|part|partial|tmp|download|swp)$)|(^~\$)|(^\.)/i;
 
@@ -351,6 +351,47 @@ const TRIGGERS = [
       };
       check();
       const timer = setInterval(check, POLL.onlineMs);
+      return () => clearInterval(timer);
+    },
+  },
+  {
+    id: 'idle',
+    name: 'Away From Keyboard',
+    emoji: '💤',
+    rarity: 'rare',
+    unlock: 3,
+    text: 'Fires when you\'ve been away for N minutes, or when you come back after being away that long.',
+    params: [
+      { key: 'minutes', label: 'Away for (minutes)', type: 'number', default: 10, min: 1, required: true },
+      { key: 'when', label: 'Fire', type: 'select', options: ['when I go away', 'when I come back'], default: 'when I go away' },
+    ],
+    start({ params, fire, problem, helpers }) {
+      const limit = Math.max(1, Number(params.minutes) || 10) * 60;
+      const onReturn = params.when === 'when I come back';
+      let away = false; // true once idle passed the limit, until input resumes
+      let longest = 0;
+      const check = async () => {
+        const idle = await helpers.platform.readIdleSeconds();
+        if (idle === null) {
+          problem('Can\'t read idle time here (on Linux, install xprintidle)');
+          return;
+        }
+        problem(null);
+        if (idle >= limit) {
+          longest = Math.max(longest, idle);
+          if (!away) {
+            away = true;
+            if (!onReturn) fire({ idle: { minutes: Math.floor(idle / 60), awayFor: formatSeconds(idle) } });
+          }
+        } else if (away) {
+          // Input resumed. The away time is at least what we last saw.
+          away = false;
+          if (onReturn) fire({ idle: { minutes: Math.floor(longest / 60), awayFor: formatSeconds(longest) } });
+          longest = 0;
+        }
+      };
+      check();
+      const timer = setInterval(check, POLL.idleMs);
       return () => clearInterval(timer);
     },
   },

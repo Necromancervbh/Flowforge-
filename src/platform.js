@@ -103,6 +103,47 @@ export async function readBattery() {
   return null;
 }
 
+// Seconds since the last keyboard or mouse input, or null when it can't be read.
+export async function readIdleSeconds() {
+  try {
+    if (platform === 'darwin') {
+      const { stdout } = await run('ioreg', ['-c', 'IOHIDSystem', '-d', '4']);
+      const m = /"HIDIdleTime"\s*=\s*(\d+)/.exec(stdout);
+      return m ? Math.floor(Number(m[1]) / 1e9) : null;
+    }
+    if (platform === 'win32') {
+      const script = [
+        'Add-Type @"',
+        'using System; using System.Runtime.InteropServices;',
+        'public static class FFIdle {',
+        '  [StructLayout(LayoutKind.Sequential)] struct LII { public uint cbSize; public uint dwTime; }',
+        '  [DllImport("user32.dll")] static extern bool GetLastInputInfo(ref LII p);',
+        '  public static uint Ms() { var l = new LII(); l.cbSize = 8; GetLastInputInfo(ref l); return (uint)Environment.TickCount - l.dwTime; }',
+        '}',
+        '"@',
+        '[FFIdle]::Ms()',
+      ].join('\n');
+      const { stdout } = await run('powershell.exe', ['-NoProfile', '-Command', script]);
+      const ms = Number(stdout.trim());
+      return Number.isFinite(ms) ? Math.floor(ms / 1000) : null;
+    }
+    // Linux: GNOME (X11 or Wayland) first, then xprintidle for other X11 desktops.
+    try {
+      const { stdout } = await run('gdbus', ['call', '--session', '--dest', 'org.gnome.Mutter.IdleMonitor',
+        '--object-path', '/org/gnome/Mutter/IdleMonitor/Core', '--method', 'org.gnome.Mutter.IdleMonitor.GetIdletime']);
+      const m = /(\d+)/.exec(stdout);
+      if (m) return Math.floor(Number(m[1]) / 1000);
+    } catch {
+      // not GNOME
+    }
+    const { stdout } = await run('xprintidle', []);
+    const ms = Number(stdout.trim());
+    return Number.isFinite(ms) ? Math.floor(ms / 1000) : null;
+  } catch {
+    return null;
+  }
+}
+
 // True when a DNS lookup of a well-known host succeeds within 5 seconds.
 export async function isOnline() {
   try {

@@ -485,6 +485,34 @@ test('Back Online fires when the connection returns, not at start', async () => 
   assert.match(calls[0][1], /^Back after \d+s$/);
 });
 
+test('Away From Keyboard fires once per absence, on leaving or on return', async () => {
+  const { POLL } = await import('../src/cards.js');
+  const saved = POLL.idleMs;
+  POLL.idleMs = 20;
+  engine.store.profile.xp = 10000;
+  const run = async (when) => {
+    // Idle seconds as seen by each poll: away 10+ min, back, away again.
+    const readings = [30, 700, 900, 5, 10, 650, 660];
+    fakePlatform.readIdleSeconds = async () => readings.shift() ?? 20;
+    calls = [];
+    const combo = engine.saveCombo({
+      name: `AFK ${when}`, trigger: { card: 'idle', params: { minutes: 10, when } },
+      actions: [{ card: 'notify', params: { title: '{{idle.awayFor}}' } }],
+    });
+    await new Promise((r) => setTimeout(r, 400));
+    engine.deleteCombo(combo.id);
+    return calls.map((c) => c[1]);
+  };
+  assert.deepEqual(await run('when I go away'), ['11m 40s', '10m 50s']);
+  assert.deepEqual(await run('when I come back'), ['15m 0s', '11m 0s']);
+  fakePlatform.readIdleSeconds = async () => null;
+  const combo = engine.saveCombo({ name: 'No idle', trigger: { card: 'idle' }, actions: [{ card: 'notify' }] });
+  await new Promise((r) => setTimeout(r, 50));
+  assert.match(engine.snapshot().combos.find((c) => c.id === combo.id).armError, /idle time/);
+  POLL.idleMs = saved;
+  delete fakePlatform.readIdleSeconds;
+});
+
 test('a missing watch folder is reported instead of crashing', () => {
   const combo = engine.saveCombo({
     name: 'Broken',
