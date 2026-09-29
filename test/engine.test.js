@@ -69,8 +69,9 @@ test('a manual combo runs its actions, fills placeholders and earns XP', async (
   assert.equal(result.status, 'ok');
   assert.deepEqual(calls[0], ['notify', 'Hi', 'Hello on Saturday']);
   assert.equal(combo.runs, 1);
-  // run XP + "First Forge" + "It Lives!" achievements
-  assert.equal(engine.store.profile.xp, 15 + 50 + 25);
+  // run XP + "First Forge" + "It Lives!" achievements + any daily quests that completed
+  const questXp = engine.snapshot().quests.filter((q) => q.done).reduce((n, q) => n + q.xp, 0);
+  assert.equal(engine.store.profile.xp, 15 + 50 + 25 + questXp);
   assert.deepEqual(engine.store.profile.achievements.sort(), ['first-forge', 'first-run']);
 });
 
@@ -475,6 +476,35 @@ test('Card Collector counts distinct cards across successful runs', async () => 
   assert.ok(engine.store.profile.stats.cardsUsed.length >= 10);
   assert.ok(engine.store.profile.achievements.includes('cards-10'));
   assert.ok(!engine.store.profile.achievements.includes('cards-20'));
+});
+
+test('daily quests: 3 per day, stable within a day, progress and pay out once', async () => {
+  const { questsForDay, QUESTS } = await import('../src/game.js');
+  const a = questsForDay('2026-09-29').map((q) => q.id);
+  assert.equal(a.length, 3);
+  assert.equal(new Set(a).size, 3);
+  assert.deepEqual(questsForDay('2026-09-29').map((q) => q.id), a, 'same quests all day');
+  const days = new Set(Array.from({ length: 10 }, (_, i) => questsForDay(`2026-10-${10 + i}`).map((q) => q.id).join()));
+  assert.ok(days.size > 1, 'quests change between days');
+
+  // Find a day whose quests include run-3 and play-1, then drive the engine on it.
+  let day = 1;
+  while (!['run-3', 'play-1'].every((id) => questsForDay(`2026-11-${String(day).padStart(2, '0')}`).some((q) => q.id === id))) day++;
+  let now = new Date(2026, 10, day, 10);
+  engine.stop();
+  engine = makeEngine(() => now);
+  const combo = engine.saveCombo({ name: 'Q', trigger: { card: 'manual' }, actions: [{ card: 'notify' }] });
+  const xpBefore = engine.store.profile.xp;
+  for (let i = 0; i < 4; i++) await engine.fire(combo.id, {}, 'manual');
+  const status = Object.fromEntries(engine.snapshot().quests.map((q) => [q.id, q]));
+  assert.equal(status['run-3'].progress, 3);
+  assert.equal(status['run-3'].done, true);
+  assert.equal(status['play-1'].done, true);
+  const questXp = QUESTS.filter((q) => ['run-3', 'play-1'].includes(q.id)).reduce((n, q) => n + q.xp, 0);
+  assert.ok(engine.store.profile.xp - xpBefore >= questXp + 4 * 15, 'quest XP paid once on top of run XP');
+
+  now = new Date(2026, 10, day + 1, 10);
+  assert.ok(engine.snapshot().quests.every((q) => q.progress === 0 && !q.done), 'fresh quests the next day');
 });
 
 test('reaching a new level unlocks cards and announces them', async () => {

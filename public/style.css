@@ -410,6 +410,20 @@ h3 { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: 
 
 .empty { text-align: center; color: var(--muted); font-size: 13px; padding: 18px 8px; border: 1px dashed var(--line); border-radius: var(--radius); }
 
+.quests ol { list-style: none; margin: 0 0 6px; padding: 0; display: grid; gap: 6px; }
+.quest { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; background: var(--bg-2); }
+.quest-emoji { font-size: 18px; flex: none; }
+.quest-body { flex: 1; min-width: 0; display: grid; gap: 5px; }
+.quest-text { font-size: 13px; }
+.quest .bar { display: block; height: 5px; }
+.quest .bar-fill { display: block; }
+.quest-meta { flex: none; text-align: right; font-size: 12px; font-weight: 700; }
+.quest-meta small { display: block; color: var(--ember-2); font-weight: 700; font-size: 10px; }
+.quest.done { border-color: var(--action); }
+.quest.done .quest-text { color: var(--muted); text-decoration: line-through; }
+.quest.done .bar-fill { background: var(--action); }
+.quest-all { font-size: 12px; color: var(--action); text-align: center; padding: 4px; }
+
 .recipe {
   display: flex;
   align-items: center;
