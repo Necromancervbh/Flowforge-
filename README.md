@@ -90,6 +90,8 @@ New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screens
 | | 🌅 Daily Ritual | rare | Lv 2 | Once a day at a set time |
 | | 📋 Copycat | rare | Lv 2 | You copy new text (e.g. collect every link you copy) |
 | | ✏️ Tripwire | rare | Lv 3 | A specific file is edited and saved (notes, a game save…) |
+| | 🔋 Low Battery | rare | Lv 3 | Your laptop drops below N% while unplugged (once per discharge) |
+| | 📶 Back Online | rare | Lv 3 | Your internet comes back after dropping |
 | | 🔌 Power On | common | Lv 3 | When FlowForge starts |
 | | 🔭 Web Watcher | epic | Lv 4 | A web page's text changes |
 | **IF** | 🔎 Keyword Filter | common | Lv 1 | Text contains / doesn't contain a word |
@@ -113,7 +115,7 @@ New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screens
 ### Magic words
 
 Any text box can use placeholders that are filled in when the combo runs:
-`{{file.name}}`, `{{file.base}}`, `{{file.ext}}`, `{{file.path}}`, `{{file.dir}}`, `{{date}}`, `{{time}}`, `{{datetime}}`, `{{year}}`, `{{month}}`, `{{day}}`, `{{weekday}}`, `{{combo.name}}`, `{{clip.text}}`, `{{clip.snippet}}`, `{{page.url}}`, `{{page.title}}`, `{{page.snippet}}`.
+`{{file.name}}`, `{{file.base}}`, `{{file.ext}}`, `{{file.path}}`, `{{file.dir}}`, `{{date}}`, `{{time}}`, `{{datetime}}`, `{{year}}`, `{{month}}`, `{{day}}`, `{{weekday}}`, `{{combo.name}}`, `{{clip.text}}`, `{{clip.snippet}}`, `{{battery.percent}}`, `{{network.offlineFor}}`, `{{page.url}}`, `{{page.title}}`, `{{page.snippet}}`.
 
 Example: move to `~/Documents/Sorted/{{year}}/{{file.ext}}`.
 

@@ -356,6 +356,53 @@ test('Tripwire reports a missing file', () => {
   assert.match(engine.snapshot().combos.find((c) => c.id === combo.id).armError, /File not found/);
 });
 
+test('Low Battery fires once per discharge and re-arms after charging', async () => {
+  const { POLL } = await import('../src/cards.js');
+  const saved = POLL.batteryMs;
+  POLL.batteryMs = 20;
+  const readings = [
+    { percent: 40, charging: false }, { percent: 20, charging: false }, { percent: 15, charging: false },
+    { percent: 18, charging: true }, { percent: 30, charging: true }, { percent: 19, charging: false },
+  ];
+  fakePlatform.readBattery = async () => readings.shift() ?? { percent: 19, charging: false };
+  engine.store.profile.xp = 10000;
+  const combo = engine.saveCombo({
+    name: 'Battery', trigger: { card: 'low-battery', params: { percent: 20 } },
+    actions: [{ card: 'notify', params: { title: 'Low {{battery.percent}}%' } }],
+  });
+  await new Promise((r) => setTimeout(r, 400));
+  POLL.batteryMs = saved;
+  delete fakePlatform.readBattery;
+  assert.deepEqual(calls.map((c) => c[1]), ['Low 20%', 'Low 19%']);
+});
+
+test('Low Battery says so on a computer without a battery', async () => {
+  fakePlatform.readBattery = async () => null;
+  engine.store.profile.xp = 10000;
+  const combo = engine.saveCombo({ name: 'Desk', trigger: { card: 'low-battery' }, actions: [{ card: 'notify' }] });
+  await new Promise((r) => setTimeout(r, 50));
+  delete fakePlatform.readBattery;
+  assert.equal(engine.snapshot().combos.find((c) => c.id === combo.id).armError, 'No battery found on this computer');
+});
+
+test('Back Online fires when the connection returns, not at start', async () => {
+  const { POLL } = await import('../src/cards.js');
+  const saved = POLL.onlineMs;
+  POLL.onlineMs = 20;
+  const states = [true, true, false, false, true, true];
+  fakePlatform.isOnline = async () => states.shift() ?? true;
+  engine.store.profile.xp = 10000;
+  engine.saveCombo({
+    name: 'Net', trigger: { card: 'back-online' },
+    actions: [{ card: 'notify', params: { title: 'Back after {{network.offlineFor}}' } }],
+  });
+  await new Promise((r) => setTimeout(r, 300));
+  POLL.onlineMs = saved;
+  delete fakePlatform.isOnline;
+  assert.equal(calls.length, 1);
+  assert.match(calls[0][1], /^Back after \d+s$/);
+});
+
 test('a missing watch folder is reported instead of crashing', () => {
   const combo = engine.saveCombo({
     name: 'Broken',

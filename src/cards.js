@@ -18,6 +18,8 @@ import { expandHome, tildify } from './platform.js';
 export const CLIPBOARD_POLL_MS = 1500;
 export const FILE_POLL_MS = 1000;
 export const MAX_WAIT_SECONDS = 300;
+// How often the polling triggers check (tests shorten these).
+export const POLL = { batteryMs: 60000, onlineMs: 15000 };
 
 const TEMP_FILE =/(\.(crdownload|part|partial|tmp|download|swp)$)|(^~\$)|(^\.)/i;
 
@@ -66,6 +68,12 @@ function resolveFolder(folder) {
   const dir = expandHome(String(folder || '').trim());
   if (!dir) throw new Error('No folder chosen');
   return path.resolve(dir);
+}
+
+export function formatSeconds(seconds) {
+  if (seconds < 60) return `${seconds}s`;
+  const minutes = Math.floor(seconds / 60);
+  return minutes < 60 ? `${minutes}m ${seconds % 60}s` : `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
 }
 
 export function formatBytes(bytes) {
@@ -289,6 +297,60 @@ const TRIGGERS = [
       };
       poll();
       const timer = setInterval(poll, CLIPBOARD_POLL_MS);
+      return () => clearInterval(timer);
+    },
+  },
+  {
+    id: 'low-battery',
+    name: 'Low Battery',
+    emoji: '🔋',
+    rarity: 'rare',
+    unlock: 3,
+    text: 'Fires once when your laptop drops below a charge level while unplugged.',
+    params: [{ key: 'percent', label: 'Below (%)', type: 'number', default: 20, min: 1, required: true }],
+    start({ params, fire, problem, helpers }) {
+      const threshold = Math.min(99, Math.max(1, Number(params.percent) || 20));
+      let armed = true; // fires once per discharge, re-arms after charging
+      const check = async () => {
+        const battery = await helpers.platform.readBattery();
+        if (!battery) {
+          problem('No battery found on this computer');
+          return;
+        }
+        problem(null);
+        if (battery.charging || battery.percent > threshold + 2) armed = true;
+        if (armed && !battery.charging && battery.percent <= threshold) {
+          armed = false;
+          fire({ battery: { percent: battery.percent } });
+        }
+      };
+      check();
+      const timer = setInterval(check, POLL.batteryMs);
+      return () => clearInterval(timer);
+    },
+  },
+  {
+    id: 'back-online',
+    name: 'Back Online',
+    emoji: '📶',
+    rarity: 'rare',
+    unlock: 3,
+    text: 'Fires when your internet connection comes back after dropping.',
+    params: [],
+    start({ fire, helpers }) {
+      let online = null;
+      let wentOffline = null;
+      const check = async () => {
+        const now = await helpers.platform.isOnline();
+        if (online === true && !now) wentOffline = Date.now();
+        if (online === false && now) {
+          const seconds = wentOffline ? Math.round((Date.now() - wentOffline) / 1000) : 0;
+          fire({ network: { offlineSeconds: seconds, offlineFor: formatSeconds(seconds) } });
+        }
+        online = now;
+      };
+      check();
+      const timer = setInterval(check, POLL.onlineMs);
       return () => clearInterval(timer);
     },
   },
