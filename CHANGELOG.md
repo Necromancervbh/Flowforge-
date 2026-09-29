@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- 📦 **Card packs**: each level-up hands you a pack to tear open, and the newly unlocked cards flip in one by one (click one to try it in the forge); respects reduced-motion settings
 - 📊 **Stats dialog**: runs, success rate, time saved, best streak and cards used, a 14-day runs chart (hover for details, or view as a table) and your busiest combos
 - 🔊 **Sound effects**: a coin for each run, a low note for failures, chimes for achievements and quests, a fanfare on level-up; mute with the 🔊 button (remembered)
 - ⛓️ **Chain Reaction** action card (level 4): run another combo by name, passing the same file along; loops like A → B → A are refused, and chains stop at 5 combos
