@@ -40,6 +40,21 @@ function parseMinutes(hhmm) {
   return Number(m[1]) * 60 + Number(m[2]);
 }
 
+const DAY_NAMES = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+
+// "Mon, wednesday fri" -> Set {1, 3, 5}. Unknown words are an error so a
+// typo doesn't silently turn the combo off.
+export function parseDays(list) {
+  const days = new Set();
+  for (const word of String(list || '').toLowerCase().split(/[\s,]+/).filter(Boolean)) {
+    const index = DAY_NAMES.indexOf(word.slice(0, 3));
+    if (index === -1) throw new Error(`"${word}" is not a day (use mon, tue, wed, thu, fri, sat, sun)`);
+    days.add(index);
+  }
+  if (!days.size) throw new Error('List at least one day, e.g. mon, wed, fri');
+  return days;
+}
+
 function requireFile(ctx, cardName) {
   if (!ctx.file?.path) {
     throw new Error(`${cardName} needs a file. Pair it with the "File Appears" trigger.`);
@@ -371,10 +386,15 @@ const CONDITIONS = [
     emoji: '📅',
     rarity: 'common',
     unlock: 2,
-    text: 'Continue only on weekdays or only on weekends.',
-    params: [{ key: 'days', label: 'Days', type: 'select', options: ['weekdays', 'weekends'], default: 'weekdays' }],
+    text: 'Continue only on weekdays, weekends, or the days you list (e.g. mon, wed, fri).',
+    params: [
+      { key: 'days', label: 'Days', type: 'select', options: ['weekdays', 'weekends', 'these days'], default: 'weekdays' },
+      { key: 'list', label: 'Which days (for "these days")', type: 'text', placeholder: 'mon, wed, fri' },
+    ],
     check(params, ctx) {
-      const weekend = [0, 6].includes(ctx.now.getDay());
+      const today = ctx.now.getDay();
+      if (params.days === 'these days') return parseDays(params.list).has(today);
+      const weekend = today === 0 || today === 6;
       return params.days === 'weekends' ? weekend : !weekend;
     },
   },

@@ -138,6 +138,18 @@ test('Type Gate matches file extensions case-insensitively, with or without dots
   assert.throws(() => CARD_BY_ID.get('file-type').check({ mode: 'is one of', types: 'pdf' }, {}), /needs a file/);
 });
 
+test('Calendar Gate supports weekdays, weekends and a list of specific days', () => {
+  const gate = CARD_BY_ID.get('day-type');
+  const on = (y, m, d) => ({ now: new Date(y, m, d, 12) }); // 2026-09-28 is a Monday
+  assert.equal(gate.check({ days: 'weekdays' }, on(2026, 8, 28)), true);
+  assert.equal(gate.check({ days: 'weekends' }, on(2026, 8, 27)), true);
+  assert.equal(gate.check({ days: 'these days', list: 'Mon, wednesday fri' }, on(2026, 8, 28)), true);
+  assert.equal(gate.check({ days: 'these days', list: 'Mon, wednesday fri' }, on(2026, 8, 29)), false);
+  assert.equal(gate.check({ days: 'these days', list: 'sun' }, on(2026, 8, 27)), true);
+  assert.throws(() => gate.check({ days: 'these days', list: 'mon, funday' }, on(2026, 8, 28)), /"funday" is not a day/);
+  assert.throws(() => gate.check({ days: 'these days', list: '' }, on(2026, 8, 28)), /at least one day/);
+});
+
 test('time windows work across midnight', () => {
   const check = (h, from, to) => CARD_BY_ID.get('time-window').check({ from, to }, { now: new Date(2026, 0, 1, h) });
   assert.equal(check(23, '22:00', '06:00'), true);
