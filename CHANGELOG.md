@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- 💤 **Away From Keyboard** trigger card (level 3): fires when you've been away N minutes, or when you come back, with `{{idle.awayFor}}`
 - 🧹 **Tidy Up** action card (level 3): move files older than N days out of a folder, never overwriting
 - 📸 **Snapshot** action card (level 4): save a screenshot; later cards can use it as `{{file.path}}`
 - 🍀 **Surprise Break** starter recipe: once an hour, a 25% chance of a break reminder
