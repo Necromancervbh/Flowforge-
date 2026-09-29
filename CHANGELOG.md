@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## 1.2.0 (2026-09-29)
+
+Card packs, sound, stats, combo chains and five new cards. Now 32 cards.
 
 - 📦 **Card packs**: each level-up hands you a pack to tear open, and the newly unlocked cards flip in one by one (click one to try it in the forge); respects reduced-motion settings
 - 📊 **Stats dialog**: runs, success rate, time saved, best streak and cards used, a 14-day runs chart (hover for details, or view as a table) and your busiest combos
