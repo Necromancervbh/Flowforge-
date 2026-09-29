@@ -64,6 +64,21 @@ const ART = {
     <circle cx="32" cy="9.5" r="2" fill="#221d19" stroke="none"/>
     ${star(54, 22, 6)}${star(9, 46, 4)}`,
 
+  'low-battery': `
+    <rect x="6" y="18" width="46" height="28" rx="5" fill="#e8edf2"/>
+    <rect x="52" y="26" width="6" height="12" rx="2" fill="#b0b8c4"/>
+    <rect x="11" y="23" width="9" height="18" rx="2" fill="#ef5b5b"/>
+    <path stroke="#ef5b5b" stroke-width="5" d="M36 25V33"/>
+    <circle cx="36" cy="39.5" r="2.6" fill="#ef5b5b" stroke="none"/>`,
+
+  'back-online': `
+    <path fill="none" stroke="#4aa3ff" stroke-width="5" d="M8 28Q32 6 56 28"/>
+    <path fill="none" stroke="#4aa3ff" stroke-width="5" d="M16 36Q32 21 48 36"/>
+    <path fill="none" stroke="#4aa3ff" stroke-width="5" d="M24 44Q32 36 40 44"/>
+    <circle cx="32" cy="52" r="5" fill="#4aa3ff"/>
+    <circle cx="52" cy="50" r="9" fill="#4cc38a"/>
+    <path fill="none" stroke="#fff" stroke-width="2.5" d="M47.5 50L50.5 53L56 47"/>`,
+
   'on-start': `
     <circle cx="32" cy="32" r="25" fill="#1f3b2d"/>
     <circle cx="32" cy="32" r="19" fill="#27543c" stroke-width="0"/>

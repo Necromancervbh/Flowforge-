@@ -5,6 +5,8 @@
 import { execFile, exec, spawn } from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
+import fs from 'node:fs/promises';
+import dns from 'node:dns/promises';
 
 const platform = process.platform;
 
@@ -68,6 +70,50 @@ export async function openTarget(target) {
   if (platform === 'darwin') await run('open', [target]);
   else if (platform === 'win32') await run('rundll32.exe', ['url.dll,FileProtocolHandler', target]);
   else await run('xdg-open', [target]);
+}
+
+// Battery level as { percent, charging }, or null when there is no battery
+// (desktop PCs) or it can't be read.
+export async function readBattery() {
+  try {
+    if (platform === 'linux') {
+      const base = '/sys/class/power_supply';
+      const bat = (await fs.readdir(base)).find((d) => d.startsWith('BAT'));
+      if (!bat) return null;
+      const percent = Number((await fs.readFile(path.join(base, bat, 'capacity'), 'utf8')).trim());
+      const status = (await fs.readFile(path.join(base, bat, 'status'), 'utf8')).trim();
+      return { percent, charging: status !== 'Discharging' };
+    }
+    if (platform === 'darwin') {
+      const { stdout } = await run('pmset', ['-g', 'batt']);
+      const m = /(\d+)%;\s*([\w ]+)/.exec(stdout);
+      if (!m) return null;
+      return { percent: Number(m[1]), charging: !/discharging/i.test(m[2]) };
+    }
+    if (platform === 'win32') {
+      const { stdout } = await run('powershell.exe', ['-NoProfile', '-Command',
+        '$b = Get-CimInstance Win32_Battery | Select-Object -First 1; if ($b) { "$($b.EstimatedChargeRemaining) $($b.BatteryStatus)" }']);
+      const [percent, status] = stdout.trim().split(/\s+/).map(Number);
+      if (!Number.isFinite(percent)) return null;
+      return { percent, charging: status !== 1 }; // 1 = discharging
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+// True when a DNS lookup of a well-known host succeeds within 5 seconds.
+export async function isOnline() {
+  try {
+    await Promise.race([
+      dns.lookup('one.one.one.one'),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000)),
+    ]);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 // Clipboard readers per OS, tried in order (Linux has several).
