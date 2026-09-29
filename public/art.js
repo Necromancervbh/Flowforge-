@@ -220,6 +220,19 @@ const ART = {
     ${lines(26, 38, [26, 38], '#c9b8a3')}
     <path fill="none" stroke="#ef5b5b" stroke-width="3" d="M32 17V22M29 19.5L32 22.5L35 19.5M32 47V42M29 44.5L32 41.5L35 44.5"/>`,
 
+  chain: `
+    <g fill="none" stroke-width="7" stroke-linecap="round">
+      <rect x="6" y="24" width="24" height="16" rx="8" stroke="#8d96a3"/>
+      <rect x="34" y="24" width="24" height="16" rx="8" stroke="#8d96a3"/>
+      <path stroke="#b0b8c4" d="M22 32H42"/>
+    </g>
+    <g fill="none" stroke-width="2" stroke="#221d19" stroke-linecap="round">
+      <rect x="6" y="24" width="24" height="16" rx="8"/>
+      <rect x="34" y="24" width="24" height="16" rx="8"/>
+    </g>
+    <path fill="#ffb347" d="M30 4L22 18H30L26 28L40 12H31L36 4Z"/>
+    ${star(52, 52, 5)}${star(10, 50, 4)}`,
+
   'tidy-up': `
     <path stroke="#8a5530" stroke-width="4" d="M44 6L30 36"/>
     <path fill="#ffd166" d="M22 32L38 39L34 48Q22 58 8 56Q16 50 18 42Z"/>

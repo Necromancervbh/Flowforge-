@@ -19,6 +19,7 @@ const MAX_CONDITIONS = 5;
 const MAX_ACTIONS = 6;
 const WRITTEN_TTL = 15000;
 const HISTORY_LENGTH = 5;
+const MAX_CHAIN = 5;
 
 export class Engine extends EventEmitter {
   constructor({ store, platform = realPlatform, now = () => new Date() }) {
@@ -46,6 +47,7 @@ export class Engine extends EventEmitter {
         this.ownClipboard = String(text).slice(0, 10000).trimEnd();
       },
       isOwnClipboard: (text) => this.ownClipboard !== undefined && String(text).slice(0, 10000).trimEnd() === this.ownClipboard,
+      runChained: (name, ctx) => this.runChained(name, ctx),
     };
   }
 
@@ -175,6 +177,23 @@ export class Engine extends EventEmitter {
       this.changed();
       return { status: 'error', error: err.message };
     }
+  }
+
+  // Chain Reaction: run another combo by name, right away (not through its
+  // queue, which the calling combo may be holding). ctx.chain lists the combos
+  // already in this chain, so A → B → A is refused instead of looping forever.
+  async runChained(name, ctx) {
+    const wanted = String(name || '').trim().toLowerCase();
+    const target = this.store.combos.find((c) => c.name.trim().toLowerCase() === wanted);
+    if (!target) throw new Error(`No combo called "${name}"`);
+    const chain = [...(ctx.chain || [ctx.combo.id])];
+    if (chain.includes(target.id)) throw new Error(`${target.name} is already in this chain (that would loop forever)`);
+    if (chain.length >= MAX_CHAIN) throw new Error(`Chains can be at most ${MAX_CHAIN} combos long`);
+    if (!target.enabled) return { status: 'paused', combo: target };
+    // Pass along what the trigger found, so the next combo can use the same file.
+    const { file, clip, page, battery, network, idle } = ctx;
+    const result = await this.runCombo(target.id, { file, clip, page, battery, network, idle, chain: [...chain, target.id] }, 'chain');
+    return { ...result, combo: target };
   }
 
   // Last few outcomes per combo, newest first, shown under the combo.

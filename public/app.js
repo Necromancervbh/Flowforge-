@@ -259,7 +259,9 @@ function fieldHtml(lane, index, param, value) {
   } else {
     const type = param.type === 'number' ? 'number' : param.type === 'time' ? 'time' : param.secret ? 'password' : 'text';
     const min = param.min !== undefined ? `min="${param.min}"` : '';
-    input = `<input ${attrs} type="${type}" ${min} value="${esc(value)}" placeholder="${esc(param.placeholder || '')}">`;
+    // Chain Reaction's "combo" box suggests the combos you already have.
+    const list = param.key === 'combo' ? 'list="combo-names"' : '';
+    input = `<input ${attrs} type="${type}" ${min} ${list} value="${esc(value)}" placeholder="${esc(param.placeholder || '')}">`;
   }
   return `<label>${esc(param.label)}${input}</label>`;
 }
@@ -508,6 +510,7 @@ function renderQuests() {
 function renderCombos() {
   renderToggleAll();
   renderQuests();
+  $('#combo-names').innerHTML = state.combos.map((c) => `<option value="${esc(c.name)}">`).join('');
   $('#combo-list').innerHTML = state.combos.length
     ? state.combos.map(comboHtml).join('')
     : '<div class="empty">No combos yet.<br>Build one in the forge, or start from a recipe below 👇</div>';

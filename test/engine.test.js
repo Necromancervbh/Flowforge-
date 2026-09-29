@@ -267,6 +267,43 @@ test('Snapshot saves a screenshot that later cards can use', async () => {
   assert.equal(fs.readFileSync(path.join(dir, 'log.txt'), 'utf8'), 'Screenshot 2026-09-26 14-30-00.png\n');
 });
 
+test('Chain Reaction runs another combo with the same file, and refuses loops', async () => {
+  engine.store.profile.xp = 10000;
+  const { fileInfo } = await import('../src/cards.js');
+  const file = path.join(dir, 'photo.jpg');
+  fs.writeFileSync(file, 'x');
+  const log = path.join(dir, 'log.txt');
+  const second = engine.saveCombo({
+    name: 'Second', trigger: { card: 'manual' },
+    actions: [{ card: 'write-log', params: { file: log, line: 'second got {{file.name}}' } }],
+  });
+  const first = engine.saveCombo({
+    name: 'First', trigger: { card: 'manual' },
+    actions: [
+      { card: 'write-log', params: { file: log, line: 'first' } },
+      { card: 'chain', params: { combo: ' second ' } },
+    ],
+  });
+  const result = await engine.fire(first.id, { file: fileInfo(file, fs.statSync(file)) }, 'manual');
+  assert.equal(result.status, 'ok', result.error);
+  assert.equal(result.summaries[1], 'Set off Second');
+  assert.equal(fs.readFileSync(log, 'utf8'), 'first\nsecond got photo.jpg\n');
+  assert.equal(engine.store.combos.find((c) => c.id === second.id).runs, 1, 'the chained combo earns its own run');
+
+  // Second → First would make First → Second → First → … so it's refused.
+  engine.saveCombo({ ...second, actions: [...second.actions, { card: 'chain', params: { combo: 'First' } }] }, second.id);
+  const looped = await engine.fire(first.id, {}, 'manual');
+  assert.equal(looped.status, 'error');
+  assert.match(looped.error, /Second failed: .*First is already in this chain/);
+
+  const missing = engine.saveCombo({ name: 'Lost', trigger: { card: 'manual' }, actions: [{ card: 'chain', params: { combo: 'Nope' } }] });
+  assert.match((await engine.fire(missing.id, {}, 'manual')).error, /No combo called "Nope"/);
+
+  engine.setEnabled(second.id, false);
+  const paused = await engine.fire(first.id, {}, 'manual');
+  assert.equal(paused.summaries[1], 'Second is paused, skipped it');
+});
+
 test('Compactor gzips a file and can delete the original', async () => {
   const zlib = await import('node:zlib');
   const { fileInfo } = await import('../src/cards.js');

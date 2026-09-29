@@ -809,6 +809,24 @@ const ACTIONS = [
     },
   },
   {
+    id: 'chain',
+    name: 'Chain Reaction',
+    emoji: '⛓️',
+    rarity: 'epic',
+    unlock: 4,
+    saves: 0,
+    text: 'Run another combo by name, passing along the same file. Build big combos out of small ones.',
+    params: [{ key: 'combo', label: 'Combo to run', type: 'text', placeholder: 'e.g. Downloads Sorter', required: true }],
+    async run(params, ctx, helpers) {
+      const result = await helpers.runChained(params.combo, ctx);
+      const name = result.combo.name;
+      if (result.status === 'paused') return `${name} is paused, skipped it`;
+      if (result.status === 'skipped') return `${name} was held back`;
+      if (result.status === 'error') throw new Error(`${name} failed: ${result.error}`);
+      return `Set off ${name}`;
+    },
+  },
+  {
     id: 'wait',
     name: 'Hourglass',
     emoji: '⏳',

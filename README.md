@@ -119,6 +119,7 @@ New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screens
 | | 🗜️ Compactor | rare | Lv 3 | Compress the file to `.gz` (keep or delete the original) |
 | | 🧹 Tidy Up | rare | Lv 3 | Move files older than N days out of a folder (e.g. old downloads) |
 | | 📸 Snapshot | epic | Lv 4 | Save a screenshot; later cards get it as `{{file.path}}` |
+| | ⛓️ Chain Reaction | epic | Lv 4 | Run another combo by name (same file passed along; loops are refused) |
 | | 🐦‍⬛ Raven | epic | Lv 4 | Post to a Discord webhook |
 | | 🪄 Arcane Command | legendary | Lv 5 | Run a shell command |
 
