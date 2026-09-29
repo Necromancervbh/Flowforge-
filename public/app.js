@@ -2,6 +2,7 @@
 
 import { art } from './art.js';
 import { encodeCombo, decodeCombo } from './share.js';
+import { play, isMuted, setMuted } from './sound.js';
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -697,6 +698,19 @@ $('#theme-toggle').addEventListener('click', () => {
   }
 });
 
+// ---------- sound ----------
+function renderSound() {
+  const btn = $('#sound-toggle');
+  btn.textContent = isMuted() ? '🔇' : '🔊';
+  btn.title = btn.ariaLabel = isMuted() ? 'Turn sound on' : 'Mute sound';
+}
+renderSound();
+$('#sound-toggle').addEventListener('click', () => {
+  setMuted(!isMuted());
+  renderSound();
+  play('run');
+});
+
 // ---------- toasts ----------
 function toast(title, message = '', kind = '') {
   const el = document.createElement('div');
@@ -723,7 +737,15 @@ function connect() {
   const events = new EventSource('/api/events');
   events.onmessage = (msg) => {
     const event = JSON.parse(msg.data);
-    if (event.type === 'toast') toast(event.title, event.message, event.kind);
+    if (event.type === 'toast') {
+      toast(event.title, event.message, event.kind);
+      play(event.kind);
+    }
+    // A combo finishing (or failing); achievements and other log lines stay quiet.
+    if (event.type === 'activity' && event.entry.comboId) {
+      if (event.entry.level === 'ok') play('run');
+      if (event.entry.level === 'error') play('error');
+    }
     refreshSoon();
   };
   events.onopen = refreshSoon;

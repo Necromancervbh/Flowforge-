@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- 🔊 **Sound effects**: a coin for each run, a low note for failures, chimes for achievements and quests, a fanfare on level-up; mute with the 🔊 button (remembered)
 - ⛓️ **Chain Reaction** action card (level 4): run another combo by name, passing the same file along; loops like A → B → A are refused, and chains stop at 5 combos
 - 💤 **Away From Keyboard** trigger card (level 3): fires when you've been away N minutes, or when you come back, with `{{idle.awayFor}}`
 - 🧹 **Tidy Up** action card (level 3): move files older than N days out of a folder, never overwriting
