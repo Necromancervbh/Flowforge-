@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowForge: automations as a card game</title>
+  <meta name="description" content="FlowForge is a free, open-source deckbuilder where every card is a real PC automation. Snap WHEN, IF and THEN cards into combos, level them up and unlock legendary cards.">
+  <meta property="og:title" content="FlowForge: automations as a card game">
+  <meta property="og:description" content="Snap WHEN / IF / THEN cards into combos that really run on your PC. Level up, keep a streak, unlock legendary cards.">
+  <meta property="og:image" content="https://necromancervbh.github.io/Flowforge-/screenshots/overview.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚒️</text></svg>">
+  <style>
+    :root {
+      --bg: #14110f;
+      --bg-2: #1c1815;
+      --panel: #221d19;
+      --line: #3a322b;
+      --text: #f2e9df;
+      --muted: #a39585;
+      --ember: #ff8a3d;
+      --ember-2: #ffb347;
+      --trigger: #ef5b5b;
+      --condition: #f2c14e;
+      --action: #4cc38a;
+      --radius: 14px;
+      color-scheme: dark;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f4ede3;
+        --bg-2: #ebe2d5;
+        --panel: #fffaf2;
+        --line: #d9ccb9;
+        --text: #2b211a;
+        --muted: #76675a;
+        --ember: #d9621b;
+        --ember-2: #c2750e;
+        --action: #23945f;
+        --condition: #b98a0f;
+        color-scheme: light;
+      }
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(1400px 600px at 50% -250px, color-mix(in srgb, var(--ember) 16%, transparent), transparent), var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    a { color: var(--ember-2); }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
+    .brand { font-weight: 800; font-size: 20px; text-decoration: none; color: var(--text); }
+    .brand span { color: var(--ember); }
+    nav .links { display: flex; gap: 18px; font-size: 14px; }
+    nav .links a { color: var(--muted); text-decoration: none; }
+    nav .links a:hover { color: var(--text); }
+
+    .hero { text-align: center; padding: 56px 0 32px; }
+    .eyebrow { display: inline-block; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 800; color: var(--ember-2); border: 1px solid var(--line); border-radius: 99px; padding: 4px 12px; }
+    h1 { font-size: clamp(34px, 6vw, 60px); line-height: 1.08; margin: 18px 0 14px; letter-spacing: -0.02em; }
+    h1 em { font-style: normal; color: var(--ember); }
+    .lead { font-size: clamp(16px, 2.2vw, 20px); color: var(--muted); max-width: 680px; margin: 0 auto 28px; }
+    .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 12px; font-weight: 800; text-decoration: none; border: 1px solid var(--line); color: var(--text); }
+    .btn.primary { background: linear-gradient(180deg, var(--ember-2), var(--ember)); color: #1c0f05; border: 0; box-shadow: 0 6px 20px color-mix(in srgb, var(--ember) 35%, transparent); }
+    .btn:hover { filter: brightness(1.07); }
+    .badges { margin-top: 18px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+    .badges span { border: 1px solid var(--line); border-radius: 99px; padding: 3px 10px; background: var(--panel); }
+
+    .shot { margin: 36px auto 0; border-radius: var(--radius); border: 1px solid var(--line); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45); overflow: hidden; }
+    .shot img { display: block; width: 100%; height: auto; }
+
+    section { padding: 64px 0 8px; }
+    h2 { font-size: clamp(24px, 3.6vw, 34px); margin: 0 0 10px; text-align: center; }
+    .sub { text-align: center; color: var(--muted); margin: 0 auto 32px; max-width: 640px; }
+
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .step { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; border-top: 4px solid var(--c); }
+    .step .pill { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; padding: 2px 9px; border-radius: 99px; background: var(--c); color: #1a1410; }
+    .step h3 { margin: 10px 0 6px; }
+    .step p { margin: 0; color: var(--muted); font-size: 15px; }
+    .example { margin-top: 16px; text-align: center; font-family: ui-monospace, monospace; font-size: 14px; color: var(--muted); background: var(--bg-2); border: 1px dashed var(--line); border-radius: 12px; padding: 12px; overflow-x: auto; white-space: nowrap; }
+
+    .features { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+    .feature { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+    .feature .icon { font-size: 26px; }
+    .feature h3 { margin: 6px 0 4px; font-size: 17px; }
+    .feature p { margin: 0; color: var(--muted); font-size: 14px; }
+
+    .gallery { display: grid; grid-template-columns: 1.2fr 1fr; gap: 14px; align-items: start; }
+    .gallery figure { margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+    .gallery img { display: block; width: 100%; height: auto; }
+    .gallery figcaption { padding: 10px 14px; font-size: 14px; color: var(--muted); }
+
+    .start { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+    .start .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+    .start h3 { margin: 0 0 8px; }
+    .start ol { margin: 0; padding-left: 20px; color: var(--muted); }
+    .start li { margin: 4px 0; }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    pre { background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; overflow-x: auto; font-size: 14px; margin: 10px 0 0; }
+    li code { background: var(--bg-2); padding: 1px 6px; border-radius: 6px; font-size: 13px; }
+
+    footer { padding: 56px 0 40px; text-align: center; color: var(--muted); font-size: 14px; }
+
+    @media (max-width: 760px) {
+      nav .links a:not(.gh) { display: none; }
+      .steps, .gallery { grid-template-columns: 1fr; }
+      .hero { padding-top: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a class="brand" href="#">⚒️ Flow<span>Forge</span></a>
+      <div class="links">
+        <a href="#how">How it works</a>
+        <a href="#features">Features</a>
+        <a href="#start">Get started</a>
+        <a class="gh" href="https://github.com/Necromancervbh/Flowforge-">GitHub ↗</a>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <span class="eyebrow">Free &amp; open source · v1.0</span>
+      <h1>Your automations,<br>as a <em>card game</em>.</h1>
+      <p class="lead">Snap <b>WHEN</b>, <b>IF</b> and <b>THEN</b> cards into combos that really run on your PC: sort downloads, file invoices, back up notes, ping Discord. Every run earns XP, and you unlock rarer cards as you level up.</p>
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/Necromancervbh/Flowforge-/releases/latest">⬇ Download</a>
+        <a class="btn" href="https://github.com/Necromancervbh/Flowforge-">⭐ Star on GitHub</a>
+      </div>
+      <div class="badges">
+        <span>Windows · macOS · Linux</span>
+        <span>Zero dependencies</span>
+        <span>Runs 100% locally</span>
+        <span>MIT license</span>
+      </div>
+      <div class="shot"><img src="screenshots/overview.png" alt="FlowForge: card collection, the forge, your combos and the battle log" width="1440" height="960"></div>
+    </header>
+
+    <section id="how">
+      <h2>How it works</h2>
+      <p class="sub">Every automation is three kinds of card. Drag them into the forge, fill in a folder or two, press Forge, done.</p>
+      <div class="steps">
+        <div class="step" style="--c: var(--trigger)">
+          <span class="pill">WHEN</span>
+          <h3>Something happens</h3>
+          <p>A file lands in Downloads, you copy text, a file is saved, a web page changes, or it's 9 AM.</p>
+        </div>
+        <div class="step" style="--c: var(--condition)">
+          <span class="pill">IF</span>
+          <h3>It matches</h3>
+          <p>Only PDFs, only on weekdays, only if the name says "invoice", only files over 50 MB.</p>
+        </div>
+        <div class="step" style="--c: var(--action)">
+          <span class="pill">THEN</span>
+          <h3>Do this</h3>
+          <p>Move, rename, zip or copy the file, notify you, copy text, post to Discord, or run a command.</p>
+        </div>
+      </div>
+      <div class="example">📥 File Appears in Downloads → 🔎 name contains "invoice" → 🎩 move to Invoices/{{year}} · 📜 log it</div>
+    </section>
+
+    <section id="features">
+      <h2>More game than tool</h2>
+      <p class="sub">Automation software usually feels like filling in forms. FlowForge feels like building a deck.</p>
+      <div class="features">
+        <div class="feature"><div class="icon">🃏</div><h3>27 hand-drawn cards</h3><p>Common to legendary, each with its own illustration. Epic cards glow and legendary ones shimmer.</p></div>
+        <div class="feature"><div class="icon">⭐</div><h3>Levels &amp; unlocks</h3><p>Every successful run earns XP. Level up to unlock Web Watcher, Raven, Arcane Command and more.</p></div>
+        <div class="feature"><div class="icon">🔥</div><h3>Quests, streaks &amp; achievements</h3><p>Three daily quests for bonus XP, a daily streak to keep alive, and 13 achievements from <i>First Forge</i> to <i>Grand Collector</i>.</p></div>
+        <div class="feature"><div class="icon">📤</div><h3>Share combos</h3><p>Turn any combo into an <code>FF1-…</code> code a friend can import. Secrets such as webhook URLs are left out.</p></div>
+        <div class="feature"><div class="icon">📜</div><h3>See what happened</h3><p>Every combo keeps its last 5 runs, plus a Battle Log you can save as a text file.</p></div>
+        <div class="feature"><div class="icon">🛡️</div><h3>Safe by design</h3><p>Only listens on your own PC, never overwrites files, and has loop guards so a combo can't trigger itself forever.</p></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>A closer look</h2>
+      <p class="sub">Dark forge or light parchment: pick your theme.</p>
+      <div class="gallery">
+        <figure><img src="screenshots/light.png" alt="FlowForge in the light theme" loading="lazy" width="1440" height="960"><figcaption>☀️ The light theme</figcaption></figure>
+        <figure><img src="screenshots/forge.png" alt="Editing a combo in the forge" loading="lazy"><figcaption>⚒️ Building the Invoice Catcher combo</figcaption></figure>
+      </div>
+    </section>
+
+    <section id="start">
+      <h2>Get started in a minute</h2>
+      <p class="sub">FlowForge runs on your own computer. Nothing is uploaded anywhere.</p>
+      <div class="start">
+        <div class="card">
+          <h3>⬇ Download</h3>
+          <ol>
+            <li>Install <a href="https://nodejs.org">Node.js</a> 20 or newer.</li>
+            <li>Grab the zip from the <a href="https://github.com/Necromancervbh/Flowforge-/releases/latest">latest release</a> and unzip it.</li>
+            <li>Double-click <code>FlowForge.bat</code> (Windows), <code>FlowForge.command</code> (macOS) or run <code>./flowforge.sh</code> (Linux).</li>
+          </ol>
+        </div>
+        <div class="card">
+          <h3>💻 From the terminal</h3>
+          <pre><code>git clone https://github.com/Necromancervbh/Flowforge-.git
+cd Flowforge-
+npm start</code></pre>
+        </div>
+        <div class="card">
+          <h3>🧹 First combo</h3>
+          <ol>
+            <li>Click the <b>Downloads Sorter</b> starter recipe.</li>
+            <li>Press <b>⚒️ Forge combo</b>.</li>
+            <li>Download anything and watch it get sorted by type, plus your first XP.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      Made by <a href="https://github.com/Necromancervbh">Vaibhav Shukla</a> · <a href="https://github.com/Necromancervbh/Flowforge-">Source on GitHub</a> · MIT license
+    </footer>
+  </div>
+</body>
+</html>
