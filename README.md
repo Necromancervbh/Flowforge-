@@ -83,7 +83,7 @@ New here? Click a **starter recipe** (Downloads Sorter, Invoice Catcher, Screens
 | **IF** | 🔎 Keyword Filter | common | Lv 1 | Text contains / doesn't contain a word |
 | | 🧩 Type Gate | common | Lv 1 | Only certain file types (or everything except them) |
 | | 🕘 Office Hours | common | Lv 2 | Only between two times |
-| | 📅 Calendar Gate | common | Lv 2 | Only weekdays / weekends |
+| | 📅 Calendar Gate | common | Lv 2 | Only weekdays, weekends, or listed days (`mon, wed, fri`) |
 | | ⚖️ Heavy Load | rare | Lv 3 | File bigger / smaller than N MB |
 | **THEN** | 🔔 Town Crier | common | Lv 1 | Desktop notification |
 | | 🎩 Sorting Hat | rare | Lv 1 | Move the file to a folder |
