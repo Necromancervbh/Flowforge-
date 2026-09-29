@@ -17,6 +17,8 @@ Snap cards together into combos: a **WHEN** card (trigger), optional **IF** card
    (in Downloads)       (in the file name)     (to Invoices/2026)  (log it)
 ```
 
+![Demo: load a recipe, forge it, press Play, level up and open a card pack](docs/screenshots/demo.gif)
+
 ![FlowForge: card collection, forge, live combos and battle log](docs/screenshots/overview.png)
 
 ## Screenshots
