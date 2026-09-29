@@ -53,6 +53,12 @@ const RECIPES = [
     conditions: [{ card: 'text-contains', params: { text: '{{clip.text}}', word: 'http', mode: 'contains' } }],
     actions: [{ card: 'write-log', params: { file: '~/Documents/links.txt', line: '{{datetime}}  {{clip.snippet}}' } }],
   },
+  {
+    emoji: '🍀', name: 'Surprise Break', blurb: 'Once an hour, a 1-in-4 chance of a break reminder.',
+    trigger: { card: 'interval', params: { minutes: 60 } },
+    conditions: [{ card: 'lucky-charm', params: { chance: 25 } }],
+    actions: [{ card: 'notify', params: { title: 'Surprise break 🍀', message: 'Lucky you: stretch, grab a snack, take five.' } }],
+  },
 ];
 
 // The player level a recipe needs: the highest unlock level among its cards.
