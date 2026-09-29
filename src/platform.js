@@ -198,6 +198,43 @@ export async function writeClipboard(text) {
   throw lastError;
 }
 
+// Screenshot tools per OS, tried in order (Linux has several). The target file
+// is passed as an argument, or as $env:FF_FILE on Windows.
+const SCREENSHOTTERS = {
+  darwin: [['screencapture', ['-x']]],
+  win32: [['powershell.exe', ['-NoProfile', '-Command', [
+    'Add-Type -AssemblyName System.Windows.Forms, System.Drawing',
+    '$b = [System.Windows.Forms.SystemInformation]::VirtualScreen',
+    '$img = New-Object System.Drawing.Bitmap $b.Width, $b.Height',
+    '$g = [System.Drawing.Graphics]::FromImage($img)',
+    '$g.CopyFromScreen($b.Left, $b.Top, 0, 0, $img.Size)',
+    '$img.Save($env:FF_FILE, [System.Drawing.Imaging.ImageFormat]::Png)',
+  ].join('; ')], false]],
+  linux: [
+    ['grim', []],
+    ['gnome-screenshot', ['-f']],
+    ['spectacle', ['-b', '-n', '-o']],
+    ['scrot', ['-o']],
+    ['import', ['-window', 'root']],
+  ],
+};
+
+// Saves a PNG of the whole screen to `file`. Throws if no tool is installed.
+export async function takeScreenshot(file) {
+  let realError = null;
+  for (const [cmd, args, fileArg = true] of SCREENSHOTTERS[platform] || SCREENSHOTTERS.linux) {
+    try {
+      await run(cmd, fileArg ? [...args, file] : args, { env: { ...process.env, FF_FILE: file } });
+      await fs.access(file);
+      return;
+    } catch (err) {
+      // A tool that is installed but failed says more than one that is missing.
+      if (err.code !== 'ENOENT') realError ??= err;
+    }
+  }
+  throw realError || new Error('Install grim (Wayland) or scrot (X11) so FlowForge can take screenshots');
+}
+
 // The command is the user's own shell snippet; run details are exposed as
 // FF_* environment variables so file names can't inject shell syntax.
 export function runCommand(command, env) {

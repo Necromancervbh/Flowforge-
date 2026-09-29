@@ -211,6 +211,22 @@ const ART = {
     ${lines(26, 38, [26, 38], '#c9b8a3')}
     <path fill="none" stroke="#ef5b5b" stroke-width="3" d="M32 17V22M29 19.5L32 22.5L35 19.5M32 47V42M29 44.5L32 41.5L35 44.5"/>`,
 
+  'tidy-up': `
+    <path stroke="#8a5530" stroke-width="4" d="M44 6L30 36"/>
+    <path fill="#ffd166" d="M22 32L38 39L34 48Q22 58 8 56Q16 50 18 42Z"/>
+    <path fill="none" stroke="#c2750e" stroke-width="1.8" d="M16 46L26 50M19 41L31 46M13 51L22 54"/>
+    <circle cx="48" cy="52" r="3" fill="#c9b8a3"/><circle cx="55" cy="46" r="2" fill="#c9b8a3"/><circle cx="57" cy="55" r="2.5" fill="#c9b8a3"/>
+    ${star(52, 14, 5)}`,
+
+  screenshot: `
+    <rect x="6" y="18" width="52" height="36" rx="6" fill="#5b6472"/>
+    <path fill="#5b6472" d="M22 18L26 11H38L42 18Z"/>
+    <rect x="44" y="23" width="8" height="5" rx="1.5" fill="#ffd166"/>
+    <circle cx="32" cy="36" r="13" fill="#221d19"/>
+    <circle cx="32" cy="36" r="9" fill="#4ea8de"/>
+    <circle cx="29" cy="33" r="3" fill="#bfe6ff" stroke-width="0"/>
+    ${star(56, 8, 5)}`,
+
   'rename-file': `
     <path fill="none" stroke="#8d8378" stroke-width="2" d="M44 18Q54 4 61 9"/>
     <path fill="#ffb347" d="M8 34L32 10H54V32L30 56Z"/>
